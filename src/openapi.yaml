@@ -1,0 +1,894 @@
+openapi: 3.0.1
+info:
+  title: Explore education statistics - public data API
+  version: 1.0.0
+  description: >
+    This is a draft specification for the upcoming public data API for the EES platform.
+  contact:
+    name: Explore education statistics
+    email: explore.statistics@education.gov.uk
+    url: https://explore-education-statistics.service.gov.uk
+servers:
+  - url: https://ees-public-api-mock.vercel.app
+    description: Mock API
+tags:
+  - name: Publication
+    description: Operations related to publications.
+  - name: Subject
+    description: Operations related to subjects, including querying for data.
+paths:
+  /api/v1/publications:
+    get:
+      operationId: ListPublications
+      summary: List publications
+      description: Lists publications with data available for querying.
+      tags:
+        - Publication
+      parameters:
+        - name: page
+          in: query
+          description: The page of results to fetch.
+          required: false
+          schema:
+            type: number
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: The maximum number of results allowed per page.
+          required: false
+          schema:
+            type: number
+            minimum: 0
+            maximum: 20
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
+  /api/v1/publications/{publicationId}/subjects:
+    get:
+      operationId: ListPublicationSubjects
+      summary: List publication subjects
+      description: Lists subjects for to a publication.
+      tags:
+        - Publication
+      parameters:
+        - name: publicationId
+          in: path
+          description: The ID of the publication.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectViewModel'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectViewModel'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectViewModel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/subjects/{subjectId}/data:
+    post:
+      operationId: QuerySubjectData
+      summary: Query subject data
+      description: Query a subject's data, returning the filtered results and associated metadata.
+      tags:
+        - Subject
+      parameters:
+        - name: subjectId
+          in: path
+          description: The ID of the subject.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectDataQuery'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/SubjectDataQuery'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SubjectDataQuery'
+        description: ''
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SubjectDataViewModel'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectDataViewModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SubjectDataViewModel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/subjects/{subjectId}/data-file:
+    get:
+      operationId: GetSubjectDataFile
+      summary: Get subject data file
+      description: Get a subject's underlying data file, contained inside a zip.
+      tags:
+        - Subject
+      parameters:
+        - name: subjectId
+          in: path
+          description: The ID of the subject.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success. A zip containing the underlying subject data file.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/api/v1/subjects/{subjectId}/meta':
+    get:
+      operationId: GetSubjectMeta
+      summary: Get subject metadata
+      description: Gets a subject's metadata for use in creating subject data queries.
+      tags:
+        - Subject
+      parameters:
+        - name: subjectId
+          in: path
+          description: The ID of the subject.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/SubjectMetaViewModel'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectMetaViewModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/SubjectMetaViewModel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    BadRequest:
+      description: Bad Request. Usually indicates a validation error or a malformed request.
+      content:
+        text/plain:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+        text/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+    NotFound:
+      description: Not Found. Indicates that a specified resource could not be found.
+      content:
+        text/plain:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+        text/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApiErrorViewModel'
+  schemas:
+    ApiErrorViewModel:
+      type: object
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          description: The type of error.
+        title:
+          type: string
+          description: The title of the error.
+        status:
+          type: number
+          description: The HTTP status code.
+        errors:
+          type: object
+          description: |
+            A dictionary of errors associated to the request.
+            
+            The key relates to a specific property in the request or the request itself when it is an empty string (`""`). The value is a list of error messages associated to the key.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+              description: The error message.
+    FilterGroupMetaViewModel:
+      type: object
+      description: A subgroup of a filter. This is composed of filter items.
+      required:
+        - id
+        - label
+        - options
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the filter group.
+        label:
+          type: string
+          description: |
+            The human-readable label describing the filter group. 
+            
+            A value of 'Default' indicates a generic fallback group where no categorisation has been provided for the constituent filter items.
+        options:
+          type: array
+          description: The filter item options belonging to this filter group.
+          items:
+            $ref: '#/components/schemas/FilterItemMetaViewModel'
+      additionalProperties: false
+    FilterItemMetaViewModel:
+      type: object
+      description: A filterable facet (or characteristic) of a data point.
+      required:
+        - id
+        - label
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the filter item.
+        label:
+          type: string
+          description: The human-readable label describing the filter item.
+      additionalProperties: false
+    FilterMetaViewModel:
+      type: object
+      description: |
+        A group of filterable facets (or characteristics) for the data. This is composed of filter groups.
+      required:
+        - id
+        - label
+        - options
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the filter.
+        hint:
+          type: string
+          description: A hint to assist in describing the filter.
+        label:
+          type: string
+          description: The human-readable label describing the filter.
+        options:
+          type: array
+          description: The filter group options belonging to this filter.
+          items:
+            $ref: '#/components/schemas/FilterGroupMetaViewModel'
+        name:
+          type: string
+          description: The name of the filter as it appears in the underlying data file.
+        totalId:
+          type: string
+          format: uuid
+          description: The ID of the filter item that is the aggregate total for this filter.
+      additionalProperties: false
+    FootnoteViewModel:
+      type: object
+      description: A footnote associated with the subject data.
+      required:
+        - id
+        - content
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the footnote.
+        content:
+          type: string
+          description: The content of the footnote.
+      additionalProperties: false
+    GeographicLevel:
+      enum:
+        - EnglishDevolvedArea
+        - LocalAuthority
+        - LocalAuthorityDistrict
+        - LocalEnterprisePartnership
+        - Institution
+        - MayoralCombinedAuthority
+        - MultiAcademyTrust
+        - Country
+        - OpportunityArea
+        - ParliamentaryConstituency
+        - Provider
+        - Region
+        - RscRegion
+        - School
+        - Sponsor
+        - Ward
+        - PlanningArea
+      type: string
+      description: The geographic group/level for a data point's location.
+    IndicatorGroupMetaViewModel:
+      type: object
+      description: A group of indicators.
+      required:
+        - id
+        - label
+        - options
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the indicator group.
+        label:
+          type: string
+          description: |
+            The human-readable label of the indicator group.
+            
+            A value of 'Default' indicates a generic fallback group where no categorisation has been provided for the constituent indicators.
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorMetaViewModel'
+      additionalProperties: false
+    IndicatorMetaViewModel:
+      type: object
+      description: The type of measurement taken by a data point.
+      required:
+        - id
+        - label
+        - unit
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the indicator.
+        label:
+          type: string
+          description: The human-readable label of the indicator.
+        unit:
+          $ref: '#/components/schemas/Unit'
+        name:
+          type: string
+          description: The name of the indicator as it appears in the underlying data file.
+        decimalPlaces:
+          type: integer
+          format: int32
+          description: The optimal number of decimal places that the indicator should use when displayed.
+      additionalProperties: false
+    LinkViewModel:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          description: The URI of the link.
+        title:
+          type: string
+          description: The title of the link. Can help understand what the link relates to.
+        method:
+          type: string
+          description: The HTTP method to use with this link.
+    LocationMetaViewModel:
+      type: object
+      required:
+        - id
+        - level
+        - label
+        - code
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of this location.
+        level:
+          $ref: '#/components/schemas/GeographicLevel'
+        options:
+          type: array
+          description: The child locations associated to this location.
+          items:
+            $ref: '#/components/schemas/LocationMetaViewModel'
+        label:
+          type: string
+          description: The human-readable label for this location.
+        code:
+          type: string
+          description: |
+            The location's geographic code. 
+            
+            These can be:
+            
+            - ONS codes for higher geographic levels (countries, local authorities, etc)
+            - DfE codes for lower geographic levels (schools, providers, etc)
+      additionalProperties: false
+    ObservationViewModel:
+      type: object
+      description: A group of data point measurements matching a set of facets (filters, indicators, locations, time periods).
+      required:
+        - id
+        - filterItemIds
+        - geographicLevel
+        - locationId
+        - measures
+        - timePeriod
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the observation.
+        filterItemIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: The IDs of the filter items associated to this observation.
+        geographicLevel:
+          $ref: '#/components/schemas/GeographicLevel'
+        locationId:
+          type: string
+          format: uuid
+          description: The ID of the location associated to this observation.
+        measures:
+          type: object
+          description: |
+            A dictionary containing the measured data point values for each indicator associated to this observation. The key is the ID of the indicator and the value is its measured value.
+          additionalProperties:
+            type: string
+        timePeriod:
+          $ref: '#/components/schemas/TimePeriodViewModel'
+      additionalProperties: false
+    PagedPublicationSummaryViewModel:
+      type: object
+      additionalProperties: false
+      required:
+        - paging
+        - results
+        - _links
+      properties:
+        paging:
+          $ref: '#/components/schemas/PagingViewModel'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicationSummaryViewModel'
+        _links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkViewModel'
+    PagingViewModel:
+      type: object
+      description: Provides metadata for use in pagination.
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - totalResults
+        - totalPages
+      properties:
+        page:
+          type: number
+          description: The current page number.
+          minimum: 1
+        pageSize:
+          type: number
+          description: The maximum number of results per page.
+          minimum: 0
+        totalResults:
+          type: number
+          description: The total number of results across all pages.
+          minimum: 0
+        totalPages:
+          type: number
+          description: The total number of pages.
+          minimum: 0
+    PublicationSummaryViewModel:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - title
+        - slug
+        - _links
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the publication.
+        title:
+          type: string
+          description: The title of the publication.
+        slug:
+          type: string
+          description: The URL slug of the publication.
+        _links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkViewModel'
+    SubjectDataQuery:
+      type: object
+      required:
+        - timePeriod
+        - filterItems
+        - indicators
+        - locations
+      properties:
+        timePeriod:
+          $ref: '#/components/schemas/TimePeriodQuery'
+        filterItems:
+          type: array
+          description: The IDs of filter items to filter results by.
+          items:
+            type: string
+            format: uuid
+        indicators:
+          type: array
+          description: The IDs of indicators to filter results by.
+          items:
+            type: string
+            format: uuid
+        locations:
+          type: array
+          description: The IDs of locations to filter results by.
+          items:
+            type: string
+            format: uuid
+        includeMeta:
+          type: boolean
+          description: Include the subject metadata associated to the results in the response.
+          default: false
+      additionalProperties: false
+    SubjectDataResultMetaViewModel:
+      type: object
+      additionalProperties: false
+      description: The metadata associated with the subject data results.
+      required:
+        - filters
+        - footnotes
+        - indicators
+        - locations
+        - timePeriodRange
+      properties:
+        filters:
+          type: array
+          description: The filters associated with the subject data results.
+          items:
+            $ref: '#/components/schemas/FilterMetaViewModel'
+        indicators:
+          type: array
+          description: The indicators associated with the subject data results.
+          items:
+            $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
+        locations:
+          type: array
+          description: The locations associated with the subject data results.
+          items:
+            $ref: '#/components/schemas/LocationMetaViewModel'
+        timePeriodRange:
+          type: array
+          description: |
+            The complete range of time periods between the requested start and end time periods.
+            
+            Note that this represents a complete time series so it may include time periods that do not associated results.
+          items:
+            $ref: '#/components/schemas/TimePeriodMetaViewModel'
+    SubjectDataViewModel:
+      type: object
+      required:
+        - footnotes
+        - results
+        - _links
+      properties:
+        subjectMeta:
+          $ref: '#/components/schemas/SubjectDataResultMetaViewModel'
+        footnotes:
+          type: array
+          description: The footnotes relevant to the subject data results.
+          items:
+            $ref: '#/components/schemas/FootnoteViewModel'
+        results:
+          type: array
+          description: The results for this subject data query.
+          items:
+            $ref: '#/components/schemas/ObservationViewModel'
+        _links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkViewModel'
+      additionalProperties: false
+    SubjectMetaViewModel:
+      type: object
+      description: The metadata associated with the subject.
+      required:
+        - filters
+        - indicators
+        - locations
+        - timePeriods
+      properties:
+        filters:
+          type: array
+          description: All of the filters associated with the subject.
+          items:
+            $ref: '#/components/schemas/FilterMetaViewModel'
+        indicators:
+          type: array
+          description: All of the indicators associated with the subject.
+          items:
+            $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
+        locations:
+          type: array
+          description: All of the locations associated with the subject.
+          items:
+            $ref: '#/components/schemas/LocationMetaViewModel'
+        timePeriods:
+          type: array
+          description: All of the time periods associated with the subject.
+          items:
+            $ref: '#/components/schemas/TimePeriodMetaViewModel'
+      additionalProperties: false
+    SubjectViewModel:
+      type: object
+      required:
+        - id
+        - name
+        - content
+        - timePeriods
+        - geographicLevels
+        - _links
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the subject.
+        name:
+          type: string
+          description: The name of the subject.
+        content:
+          type: string
+          description: A description of this subject's contents.
+        timePeriods:
+          $ref: '#/components/schemas/TimePeriodLabels'
+        geographicLevels:
+          type: array
+          description: The geographic levels available in this subject.
+          items:
+            type: string
+        _links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkViewModel'
+      additionalProperties: false
+    TimePeriodCode:
+      enum:
+        - AY
+        - AYQ1
+        - AYQ2
+        - AYQ3
+        - AYQ4
+        - CY
+        - CYQ1
+        - CYQ2
+        - CYQ3
+        - CYQ4
+        - P1
+        - P2
+        - FY
+        - FYQ1
+        - FYQ2
+        - FYQ3
+        - FYQ4
+        - TY
+        - TYQ1
+        - TYQ2
+        - TYQ3
+        - TYQ4
+        - RY
+        - T1
+        - T1T2
+        - T2
+        - T3
+        - W1
+        - W2
+        - W3
+        - W4
+        - W5
+        - W6
+        - W7
+        - W8
+        - W9
+        - W10
+        - W11
+        - W12
+        - W13
+        - W14
+        - W15
+        - W16
+        - W17
+        - W18
+        - W19
+        - W20
+        - W21
+        - W22
+        - W23
+        - W24
+        - W25
+        - W26
+        - W27
+        - W28
+        - W29
+        - W30
+        - W31
+        - W32
+        - W33
+        - W34
+        - W35
+        - W36
+        - W37
+        - W38
+        - W39
+        - W40
+        - W41
+        - W42
+        - W43
+        - W44
+        - W45
+        - W46
+        - W47
+        - W48
+        - W49
+        - W50
+        - W51
+        - W52
+        - M1
+        - M2
+        - M3
+        - M4
+        - M5
+        - M6
+        - M7
+        - M8
+        - M9
+        - M10
+        - M11
+        - M12
+      type: string
+      description: |
+        The code describing a time period. This can be one of the following: 
+
+        - `AY` - Academic year
+        - `AYQ1-4` - Academic year quarter 1 to 4
+        - `CY` - Calendar year
+        - `RY` - Reporting year
+        - `P1` - Part 1 (April to September)
+        - `P2` - Part 2 (October to March)
+        - `FY` - Financial year
+        - `FYQ1-4` - Financial year quarter 1 to 4
+        - `TYQ1-4` - Tax year quarter 1 to 4
+        - `W1-52` - Week 1 to 52
+        - `M1-12` - Month 1 to 12
+    TimePeriodLabels:
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: string
+          description: The starting time period in human-readable format.
+        end:
+          type: string
+          description: The ending time period in human-readable format.
+      additionalProperties: false
+    TimePeriodViewModel:
+      type: object
+      required:
+        - code
+        - year
+      properties:
+        code:
+          $ref: '#/components/schemas/TimePeriodCode'
+        year:
+          type: integer
+          format: int32
+          description: The year that the time period relates to.
+    TimePeriodMetaViewModel:
+      allOf:
+        - $ref: '#/components/schemas/TimePeriodViewModel'
+        - type: object
+          required:
+            - label
+          properties:
+            label:
+              type: string
+              description: The time period in human-readable format.
+    TimePeriodQuery:
+      type: object
+      required:
+        - startYear
+        - startCode
+        - endYear
+        - endCode
+      properties:
+        startYear:
+          type: integer
+          format: int32
+          description: The starting year to filter results by.
+        startCode:
+          $ref: '#/components/schemas/TimePeriodCode'
+        endYear:
+          type: integer
+          format: int32
+          description: The ending year to filter results by.
+        endCode:
+          $ref: '#/components/schemas/TimePeriodCode'
+      additionalProperties: false
+    Unit:
+      enum:
+        - ''
+        - '%'
+        - £
+        - £m
+        - pp
+      type: string
+      description: A numeric unit.
