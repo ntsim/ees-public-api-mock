@@ -1,6 +1,6 @@
-import { SubjectViewModel } from '../schema';
+import { DataSetViewModel } from '../schema';
 
-export const absenceRatesSubject = createSubject({
+export const absenceRatesDataSet = createDataSet({
   id: '63cfc86e-c334-4e58-2912-08da0807d53c',
   content:
     '<p>Absence information for full academic year 2020/21 for pupils aged 5-15.</p>',
@@ -12,7 +12,7 @@ export const absenceRatesSubject = createSubject({
   },
 });
 
-export const absenceRatesByCharacteristicsSubject = createSubject({
+export const absenceRatesByCharacteristicsDataSet = createDataSet({
   id: '79e2f31e-e3f9-4e98-1cc6-08da0b9545bd',
   content:
     '<p>Absence information for the full academic year, by pupil characteristics including gender and ethnicity for England.</p>',
@@ -24,7 +24,7 @@ export const absenceRatesByCharacteristicsSubject = createSubject({
   },
 });
 
-export const permanentExclusionsSubject = createSubject({
+export const permanentExclusionsDataSet = createDataSet({
   id: 'b24b5476-79ea-45ab-6195-08d948561bc9',
   content:
     '<p>Number and percentage of permanent exclusions and suspensions and those pupils receiving one or more suspension.</p>',
@@ -36,29 +36,29 @@ export const permanentExclusionsSubject = createSubject({
   },
 });
 
-export const pupilAbsenceSubjects = [
-  absenceRatesSubject,
-  absenceRatesByCharacteristicsSubject,
+export const pupilAbsenceDataSets = [
+  absenceRatesDataSet,
+  absenceRatesByCharacteristicsDataSet,
 ];
 
-export const permanentExclusionsSubjects = [permanentExclusionsSubject];
+export const permanentExclusionsDataSets = [permanentExclusionsDataSet];
 
-function createSubject(subject: Omit<SubjectViewModel, '_links'>) {
+function createDataSet(dataSet: Omit<DataSetViewModel, '_links'>) {
   return {
-    ...subject,
+    ...dataSet,
     _links: {
       self: {
-        href: `/api/v1/subjects/${subject.id}`,
+        href: `/api/v1/data-sets/${dataSet.id}`,
       },
-      data: {
-        href: `/api/v1/subjects/${subject.id}/data`,
+      query: {
+        href: `/api/v1/data-sets/${dataSet.id}/query`,
         method: 'POST',
       },
-      dataFile: {
-        href: `/api/v1/subjects/${subject.id}/data-file`,
+      file: {
+        href: `/api/v1/data-sets/${dataSet.id}/file`,
       },
       meta: {
-        href: `/api/v1/subjects/${subject.id}/meta`,
+        href: `/api/v1/data-sets/${dataSet.id}/meta`,
       },
     },
   };

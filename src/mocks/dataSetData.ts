@@ -1,11 +1,11 @@
 import {
-  absenceRatesSubject,
-  absenceRatesByCharacteristicsSubject,
-  permanentExclusionsSubject,
-} from './subjects';
-import { SubjectDataViewModel, SubjectViewModel } from '../schema';
+  absenceRatesDataSet,
+  absenceRatesByCharacteristicsDataSet,
+  permanentExclusionsDataSet,
+} from './dataSets';
+import { DataSetResultsViewModel, DataSetViewModel } from '../schema';
 
-export const absenceRatesSubjectData = createLinks(
+export const absenceRatesDataSetData = createLinks(
   {
     footnotes: [
       {
@@ -25,15 +25,15 @@ export const absenceRatesSubjectData = createLinks(
         filterItemIds: ['14cbe6d4-e0ff-47e7-ade2-3af43813165a'],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: { 'b38edd21-892e-4793-3361-08da0807f3aa': '117183525' },
+        values: { 'b38edd21-892e-4793-3361-08da0807f3aa': '117183525' },
         timePeriod: { code: 'AY', year: 2020 },
       },
     ],
   },
-  absenceRatesSubject
+  absenceRatesDataSet
 );
 
-export const absenceRatesByCharacteristicsSubjectData = createLinks(
+export const absenceRatesByCharacteristicsDataSetData = createLinks(
   {
     footnotes: [
       {
@@ -56,7 +56,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '6709391',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '4942325',
         },
@@ -70,7 +70,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '117183525',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '85416979',
         },
@@ -84,7 +84,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '51400577',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '38337355',
         },
@@ -98,7 +98,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '13139879',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '9627501',
         },
@@ -112,7 +112,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '1849559',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '1294242',
         },
@@ -126,7 +126,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '110317',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '83767',
         },
@@ -140,7 +140,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '7152217',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '5249899',
         },
@@ -154,7 +154,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '16603590',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '11940979',
         },
@@ -168,7 +168,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '5769305',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '4075488',
         },
@@ -182,7 +182,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '949634',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '662770',
         },
@@ -196,7 +196,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '2281424',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '1708016',
         },
@@ -210,7 +210,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '216070',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '160556',
         },
@@ -224,7 +224,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '7874252',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '5431285',
         },
@@ -238,7 +238,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '1558413',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '1031090',
         },
@@ -252,7 +252,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '5944784',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '3878412',
         },
@@ -266,7 +266,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '854528',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '570546',
         },
@@ -280,7 +280,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '198634',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '135393',
         },
@@ -294,7 +294,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '110502',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '75741',
         },
@@ -308,7 +308,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '6496506',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '4565375',
         },
@@ -322,7 +322,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '119207289',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '83570764',
         },
@@ -336,7 +336,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '57891483',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '41461217',
         },
@@ -350,7 +350,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '11978185',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '8434992',
         },
@@ -364,7 +364,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '2696641',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '1851043',
         },
@@ -378,7 +378,7 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
         ],
         geographicLevel: 'Region',
         locationId: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        measures: {
+        values: {
           'c82070d0-d1fd-4ac2-5ae8-08da0b95637f': '16342791',
           '772c60cd-d8eb-40c8-5ae9-08da0b95637f': '10928244',
         },
@@ -386,10 +386,10 @@ export const absenceRatesByCharacteristicsSubjectData = createLinks(
       },
     ],
   },
-  absenceRatesByCharacteristicsSubject
+  absenceRatesByCharacteristicsDataSet
 );
 
-export const permanentExclusionsSubjectData = createLinks(
+export const permanentExclusionsDataSetData = createLinks(
   {
     footnotes: [
       {
@@ -404,7 +404,7 @@ export const permanentExclusionsSubjectData = createLinks(
         filterItemIds: ['49557959-21e3-4acd-97e8-961259bbb7ee'],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           '04a90197-d94f-4606-5b0b-08da6fdcfe48': '0.04737',
           '09f59b22-1275-4922-5b0d-08da6fdcfe48': '4.25086',
         },
@@ -415,7 +415,7 @@ export const permanentExclusionsSubjectData = createLinks(
         filterItemIds: ['49557959-21e3-4acd-97e8-961259bbb7ee'],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           '04a90197-d94f-4606-5b0b-08da6fdcfe48': '0.06126',
           '09f59b22-1275-4922-5b0d-08da6fdcfe48': '3.76416',
         },
@@ -426,7 +426,7 @@ export const permanentExclusionsSubjectData = createLinks(
         filterItemIds: ['49557959-21e3-4acd-97e8-961259bbb7ee'],
         geographicLevel: 'Country',
         locationId: '058416da-0cae-4958-aa00-203d745858ae',
-        measures: {
+        values: {
           '04a90197-d94f-4606-5b0b-08da6fdcfe48': '0.09651',
           '09f59b22-1275-4922-5b0d-08da6fdcfe48': '5.3581',
         },
@@ -434,25 +434,25 @@ export const permanentExclusionsSubjectData = createLinks(
       },
     ],
   },
-  permanentExclusionsSubject
+  permanentExclusionsDataSet
 );
 
 function createLinks(
-  data: Omit<SubjectDataViewModel, '_links'>,
-  subject: SubjectViewModel
-): SubjectDataViewModel {
+  data: Omit<DataSetResultsViewModel, '_links'>,
+  dataSet: DataSetViewModel
+): DataSetResultsViewModel {
   return {
     ...data,
     _links: {
       self: {
-        href: `/api/v1/subject/${subject.id}/data`,
+        href: `/api/v1/data-sets/${dataSet.id}/query`,
         method: 'POST',
       },
-      dataFile: {
-        href: `/api/v1/subjects/${subject.id}/data-file`,
+      file: {
+        href: `/api/v1/data-sets/${dataSet.id}/file`,
       },
       meta: {
-        href: `/api/v1/subjects/${subject.id}/meta`,
+        href: `/api/v1/data-sets/${dataSet.id}/meta`,
       },
     },
   };

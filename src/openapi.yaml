@@ -14,8 +14,8 @@ servers:
 tags:
   - name: Publication
     description: Operations related to publications.
-  - name: Subject
-    description: Operations related to subjects, including querying for data.
+  - name: Data Set
+    description: Operations related to data sets and their querying.
 paths:
   /api/v1/publications:
     get:
@@ -53,11 +53,11 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
-  /api/v1/publications/{publicationId}/subjects:
+  /api/v1/publications/{publicationId}/data-sets:
     get:
-      operationId: ListPublicationSubjects
-      summary: List publication subjects
-      description: Lists subjects for to a publication.
+      operationId: ListPublicationDataSets
+      summary: List a publication's data sets
+      description: Lists data sets related to a publication.
       tags:
         - Publication
       parameters:
@@ -76,32 +76,32 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SubjectViewModel'
+                  $ref: '#/components/schemas/DataSetViewModel'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SubjectViewModel'
+                  $ref: '#/components/schemas/DataSetViewModel'
             text/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SubjectViewModel'
+                  $ref: '#/components/schemas/DataSetViewModel'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-  /api/v1/subjects/{subjectId}/data:
+  /api/v1/data-sets/{dataSetId}/query:
     post:
-      operationId: QuerySubjectData
-      summary: Query subject data
-      description: Query a subject's data, returning the filtered results and associated metadata.
+      operationId: QueryDataSet
+      summary: Query a data set for specific data
+      description: Query a data set, returning the filtered results.
       tags:
-        - Subject
+        - Data Set
       parameters:
-        - name: subjectId
+        - name: dataSetId
           in: path
-          description: The ID of the subject.
+          description: The ID of the data set.
           required: true
           schema:
             type: string
@@ -110,13 +110,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubjectDataQuery'
+              $ref: '#/components/schemas/DataSetQuery'
           text/json:
             schema:
-              $ref: '#/components/schemas/SubjectDataQuery'
+              $ref: '#/components/schemas/DataSetQuery'
           application/*+json:
             schema:
-              $ref: '#/components/schemas/SubjectDataQuery'
+              $ref: '#/components/schemas/DataSetQuery'
         description: ''
       responses:
         '200':
@@ -124,35 +124,35 @@ paths:
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/SubjectDataViewModel'
+                $ref: '#/components/schemas/DataSetResultsViewModel'
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectDataViewModel'
+                $ref: '#/components/schemas/DataSetResultsViewModel'
             text/json:
               schema:
-                $ref: '#/components/schemas/SubjectDataViewModel'
+                $ref: '#/components/schemas/DataSetResultsViewModel'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-  /api/v1/subjects/{subjectId}/data-file:
+  /api/v1/data-sets/{dataSetId}/file:
     get:
-      operationId: GetSubjectDataFile
-      summary: Get subject data file
-      description: Get a subject's underlying data file, contained inside a zip.
+      operationId: GetDataSetFile
+      summary: Get a data set  underlying file
+      description: Get a data set's underlying file (as a csv contained inside a zip).
       tags:
-        - Subject
+        - Data Set
       parameters:
-        - name: subjectId
+        - name: dataSetId
           in: path
-          description: The ID of the subject.
+          description: The ID of the data set.
           required: true
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: Success. A zip containing the underlying subject data file.
+          description: Success. A zip containing the underlying data set file.
           content:
             application/zip:
               schema:
@@ -162,17 +162,17 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-  '/api/v1/subjects/{subjectId}/meta':
+  '/api/v1/data-sets/{dataSetId}/meta':
     get:
-      operationId: GetSubjectMeta
-      summary: Get subject metadata
-      description: Gets a subject's metadata for use in creating subject data queries.
+      operationId: GetDataSetMeta
+      summary: Get a data set's metadata
+      description: Get the metadata about a data set. Use this to create data set queries.
       tags:
-        - Subject
+        - Data Set
       parameters:
-        - name: subjectId
+        - name: dataSetId
           in: path
-          description: The ID of the subject.
+          description: The ID of the data set.
           required: true
           schema:
             type: string
@@ -183,13 +183,13 @@ paths:
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/SubjectMetaViewModel'
+                $ref: '#/components/schemas/DataSetMetaViewModel'
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectMetaViewModel'
+                $ref: '#/components/schemas/DataSetMetaViewModel'
             text/json:
               schema:
-                $ref: '#/components/schemas/SubjectMetaViewModel'
+                $ref: '#/components/schemas/DataSetMetaViewModel'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -334,7 +334,7 @@ components:
       additionalProperties: false
     FootnoteViewModel:
       type: object
-      description: A footnote associated with the subject data.
+      description: A footnote associated with the data.
       required:
         - id
         - content
@@ -471,7 +471,7 @@ components:
         - filterItemIds
         - geographicLevel
         - locationId
-        - measures
+        - values
         - timePeriod
       properties:
         id:
@@ -490,10 +490,10 @@ components:
           type: string
           format: uuid
           description: The ID of the location associated to this observation.
-        measures:
+        values:
           type: object
           description: |
-            A dictionary containing the measured data point values for each indicator associated to this observation. The key is the ID of the indicator and the value is its measured value.
+            A dictionary containing the data values for each indicator associated to this observation. The key is the ID of the indicator and the value is its measured value.
           additionalProperties:
             type: string
         timePeriod:
@@ -566,7 +566,7 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/LinkViewModel'
-    SubjectDataQuery:
+    DataSetQuery:
       type: object
       required:
         - timePeriod
@@ -596,13 +596,13 @@ components:
             format: uuid
         includeMeta:
           type: boolean
-          description: Include the subject metadata associated to the results in the response.
+          description: Include the data set metadata associated with the results in the response.
           default: false
       additionalProperties: false
-    SubjectDataResultMetaViewModel:
+    DataSetResultsMetaViewModel:
       type: object
       additionalProperties: false
-      description: The metadata associated with the subject data results.
+      description: The metadata associated with the data set query results.
       required:
         - filters
         - footnotes
@@ -612,17 +612,17 @@ components:
       properties:
         filters:
           type: array
-          description: The filters associated with the subject data results.
+          description: The filters associated with the data set query results.
           items:
             $ref: '#/components/schemas/FilterMetaViewModel'
         indicators:
           type: array
-          description: The indicators associated with the subject data results.
+          description: The indicators associated with the data set query results.
           items:
             $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
         locations:
           type: array
-          description: The locations associated with the subject data results.
+          description: The locations associated with the data set query results.
           items:
             $ref: '#/components/schemas/LocationMetaViewModel'
         timePeriodRange:
@@ -633,23 +633,24 @@ components:
             Note that this represents a complete time series so it may include time periods that do not associated results.
           items:
             $ref: '#/components/schemas/TimePeriodMetaViewModel'
-    SubjectDataViewModel:
+    DataSetResultsViewModel:
       type: object
+      description: Contains the results of a data set query, and any associated footnotes or meta (where applicable)
       required:
         - footnotes
         - results
         - _links
       properties:
-        subjectMeta:
-          $ref: '#/components/schemas/SubjectDataResultMetaViewModel'
+        meta:
+          $ref: '#/components/schemas/DataSetResultsMetaViewModel'
         footnotes:
           type: array
-          description: The footnotes relevant to the subject data results.
+          description: The footnotes relevant to the data set query results.
           items:
             $ref: '#/components/schemas/FootnoteViewModel'
         results:
           type: array
-          description: The results for this subject data query.
+          description: The results of the data set query.
           items:
             $ref: '#/components/schemas/ObservationViewModel'
         _links:
@@ -657,9 +658,9 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/LinkViewModel'
       additionalProperties: false
-    SubjectMetaViewModel:
+    DataSetMetaViewModel:
       type: object
-      description: The metadata associated with the subject.
+      description: All of the metadata associated with the data set.
       required:
         - filters
         - indicators
@@ -668,27 +669,28 @@ components:
       properties:
         filters:
           type: array
-          description: All of the filters associated with the subject.
+          description: All of the filters associated with the data set.
           items:
             $ref: '#/components/schemas/FilterMetaViewModel'
         indicators:
           type: array
-          description: All of the indicators associated with the subject.
+          description: All of the indicators associated with the data set.
           items:
             $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
         locations:
           type: array
-          description: All of the locations associated with the subject.
+          description: All of the locations associated with the data set.
           items:
             $ref: '#/components/schemas/LocationMetaViewModel'
         timePeriods:
           type: array
-          description: All of the time periods associated with the subject.
+          description: All of the time periods associated with the data set.
           items:
             $ref: '#/components/schemas/TimePeriodMetaViewModel'
       additionalProperties: false
-    SubjectViewModel:
+    DataSetViewModel:
       type: object
+      description: Describes and provides high-level information about a data set.
       required:
         - id
         - name
@@ -700,18 +702,18 @@ components:
         id:
           type: string
           format: uuid
-          description: The ID of the subject.
+          description: The ID of the data set.
         name:
           type: string
-          description: The name of the subject.
+          description: The name of the data set.
         content:
           type: string
-          description: A description of this subject's contents.
+          description: A description of the data set's contents.
         timePeriods:
           $ref: '#/components/schemas/TimePeriodLabels'
         geographicLevels:
           type: array
-          description: The geographic levels available in this subject.
+          description: The geographic levels available in the data set.
           items:
             type: string
         _links:

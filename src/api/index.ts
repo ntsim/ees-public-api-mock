@@ -8,24 +8,24 @@ import {
   pupilAbsencePublication,
 } from '../mocks/publications';
 import {
-  absenceRatesSubjectData,
-  absenceRatesByCharacteristicsSubjectData,
-  permanentExclusionsSubjectData,
-} from '../mocks/subjectData';
+  absenceRatesDataSetData,
+  absenceRatesByCharacteristicsDataSetData,
+  permanentExclusionsDataSetData,
+} from '../mocks/dataSetData';
 import {
-  absenceRatesSubjectMeta,
-  absenceRatesByCharacteristicsSubjectMeta,
-  permanentExclusionsSubjectMeta,
-} from '../mocks/subjectMeta';
+  absenceRatesDataSetMeta,
+  absenceRatesByCharacteristicsDataSetMeta,
+  permanentExclusionsDataSetMeta,
+} from '../mocks/dataSetMeta';
 import {
-  absenceRatesSubject,
-  absenceRatesByCharacteristicsSubject,
-  permanentExclusionsSubject,
-  permanentExclusionsSubjects,
-  pupilAbsenceSubjects,
-} from '../mocks/subjects';
+  absenceRatesDataSet,
+  absenceRatesByCharacteristicsDataSet,
+  permanentExclusionsDataSet,
+  permanentExclusionsDataSets,
+  pupilAbsenceDataSets,
+} from '../mocks/dataSets';
 import { ApiErrorViewModel } from '../schema';
-import filterSubjectDataResults from '../utils/filterSubjectDataResults';
+import filterDataSetResults from '../utils/filterDataSetResults';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
 import paginateResults from '../utils/paginateResults';
 
@@ -63,72 +63,70 @@ app.get('/api/v1/publications', (req, res) => {
   );
 });
 
-app.get('/api/v1/publications/:publicationId/subjects', (req, res) => {
+app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
   switch (req.params.publicationId) {
     case pupilAbsencePublication.id:
-      res.status(200).json(pupilAbsenceSubjects);
+      res.status(200).json(pupilAbsenceDataSets);
       break;
     case permanentExclusionsPublication.id:
-      res.status(200).json(permanentExclusionsSubjects);
+      res.status(200).json(permanentExclusionsDataSets);
       break;
     default:
       res.status(404).json(notFoundError());
   }
 });
 
-app.get('/api/v1/subjects/:subjectId/meta', (req, res) => {
-  switch (req.params.subjectId) {
-    case absenceRatesSubject.id:
-      res.status(200).json(absenceRatesSubjectMeta);
+app.get('/api/v1/data-sets/:dataSetId/meta', (req, res) => {
+  switch (req.params.dataSetId) {
+    case absenceRatesDataSet.id:
+      res.status(200).json(absenceRatesDataSetMeta);
       break;
-    case absenceRatesByCharacteristicsSubject.id:
-      res.status(200).json(absenceRatesByCharacteristicsSubjectMeta);
+    case absenceRatesByCharacteristicsDataSet.id:
+      res.status(200).json(absenceRatesByCharacteristicsDataSetMeta);
       break;
-    case permanentExclusionsSubject.id:
-      res.status(200).json(permanentExclusionsSubjectMeta);
+    case permanentExclusionsDataSet.id:
+      res.status(200).json(permanentExclusionsDataSetMeta);
       break;
     default:
       res.status(404).json(notFoundError());
   }
 });
 
-app.post('/api/v1/subjects/:subjectId/data', (req, res) => {
-  switch (req.params.subjectId) {
-    case absenceRatesSubject.id:
+app.post('/api/v1/data-sets/:dataSetId/query', (req, res) => {
+  switch (req.params.dataSetId) {
+    case absenceRatesDataSet.id:
       res
         .status(200)
-        .json(filterSubjectDataResults(absenceRatesSubjectData, req.body));
+        .json(filterDataSetResults(absenceRatesDataSetData, req.body));
       break;
-    case absenceRatesByCharacteristicsSubject.id:
+    case absenceRatesByCharacteristicsDataSet.id:
       res
         .status(200)
         .json(
-          filterSubjectDataResults(
-            absenceRatesByCharacteristicsSubjectData,
+          filterDataSetResults(
+            absenceRatesByCharacteristicsDataSetData,
             req.body
           )
         );
       break;
-    case permanentExclusionsSubject.id:
+    case permanentExclusionsDataSet.id:
       res
         .status(200)
-        .json(
-          filterSubjectDataResults(permanentExclusionsSubjectData, req.body)
-        );
+        .json(filterDataSetResults(permanentExclusionsDataSetData, req.body));
       break;
     default:
       res.status(404).json(notFoundError());
   }
 });
 
-app.get('/api/v1/subjects/:subjectId/data-file', (req, res) => {
-  switch (req.params.subjectId) {
-    case absenceRatesSubject.id:
-    case absenceRatesByCharacteristicsSubject.id:
-    case permanentExclusionsSubject.id:
+app.get('/api/v1/data-sets/:dataSetId/file', (req, res) => {
+  switch (req.params.dataSetId) {
+    case absenceRatesDataSet.id:
+    case absenceRatesByCharacteristicsDataSet.id:
+    case permanentExclusionsDataSet.id:
       res
         .status(200)
-        .sendFile(path.resolve(__dirname, '../mocks/subjectDataFile.zip'));
+        .sendFile(path.resolve(__dirname, '../mocks/dataSetFile.zip'));
       break;
     default:
       res.status(404).json(notFoundError());

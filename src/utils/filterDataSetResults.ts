@@ -1,14 +1,14 @@
 import {
   ObservationViewModel,
-  SubjectDataQuery,
-  SubjectDataViewModel,
+  DataSetQuery,
+  DataSetResultsViewModel,
 } from '../schema';
 
-export default function filterSubjectDataResults(
-  subjectData: SubjectDataViewModel,
-  query: SubjectDataQuery
-): SubjectDataViewModel {
-  const filteredResults = subjectData.results
+export default function filterDataSetResults(
+  dataSet: DataSetResultsViewModel,
+  query: DataSetQuery
+): DataSetResultsViewModel {
+  const filteredResults = dataSet.results
     .filter((observation) => {
       if (
         !observation.filterItemIds.some((filter) =>
@@ -37,8 +37,8 @@ export default function filterSubjectDataResults(
       );
     })
     .map((observation) => {
-      const measures = Object.entries(observation.measures).reduce<
-        ObservationViewModel['measures']
+      const measures = Object.entries(observation.values).reduce<
+        ObservationViewModel['values']
       >((acc, [indicatorId, value]) => {
         if (query.indicators.includes(indicatorId)) {
           acc[indicatorId] = value;
@@ -54,8 +54,8 @@ export default function filterSubjectDataResults(
     });
 
   return {
-    ...subjectData,
-    footnotes: filteredResults.length === 0 ? [] : subjectData.footnotes,
+    ...dataSet,
+    footnotes: filteredResults.length === 0 ? [] : dataSet.footnotes,
     results: filteredResults,
   };
 }

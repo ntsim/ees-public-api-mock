@@ -1,4 +1,4 @@
-import { LocationMetaViewModel, SubjectMetaViewModel } from '../schema';
+import { LocationMetaViewModel, DataSetMetaViewModel } from '../schema';
 
 export const englandLocationMeta: LocationMetaViewModel = {
   id: '058416da-0cae-4958-aa00-203d745858ae',
@@ -27,7 +27,7 @@ export const countryRegionalLocationMeta: LocationMetaViewModel[] = [
   },
 ];
 
-export const absenceRatesSubjectMeta: SubjectMetaViewModel = {
+export const absenceRatesDataSetMeta: DataSetMetaViewModel = {
   filters: [
     {
       id: 'a2eef4bc-93a4-4082-9a13-62f123ef32be',
@@ -70,7 +70,7 @@ export const absenceRatesSubjectMeta: SubjectMetaViewModel = {
   ],
 };
 
-export const absenceRatesByCharacteristicsSubjectMeta: SubjectMetaViewModel = {
+export const absenceRatesByCharacteristicsDataSetMeta: DataSetMetaViewModel = {
   filters: [
     {
       id: '9340eb64-b912-45ac-a87a-71f16b7497b8',
@@ -150,7 +150,7 @@ export const absenceRatesByCharacteristicsSubjectMeta: SubjectMetaViewModel = {
   ],
 };
 
-export const permanentExclusionsSubjectMeta: SubjectMetaViewModel = {
+export const permanentExclusionsDataSetMeta: DataSetMetaViewModel = {
   filters: [
     {
       id: '682a5316-150d-4814-85e0-54f319068e76',

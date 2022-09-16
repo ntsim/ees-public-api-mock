@@ -26,8 +26,8 @@ function createPublication(
       self: {
         href: `/api/v1/publications/${data.id}`,
       },
-      subjects: {
-        href: `/api/v1/publications/${data.id}/subjects`,
+      dataSets: {
+        href: `/api/v1/publications/${data.id}/data-sets`,
       },
     },
   };
