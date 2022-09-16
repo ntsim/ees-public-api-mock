@@ -33,11 +33,10 @@ export const absenceRatesDataSetMeta: DataSetMetaViewModel = {
       id: 'a2eef4bc-93a4-4082-9a13-62f123ef32be',
       label: 'School type',
       name: 'school_type',
-      totalId: '14cbe6d4-e0ff-47e7-ade2-3af43813165a',
       options: [
         {
           id: '14cbe6d4-e0ff-47e7-ade2-3af43813165a',
-          label: 'Total',
+          label: 'All',
         },
       ],
     },
@@ -64,11 +63,11 @@ export const absenceRatesByCharacteristicsDataSetMeta: DataSetMetaViewModel = {
       id: '9340eb64-b912-45ac-a87a-71f16b7497b8',
       label: 'School type',
       name: 'school_type',
-      totalId: '850092de-e989-4818-a8ea-4be2fb5d8bb4',
       options: [
         {
           id: '0d194014-8d2a-4abc-8b1f-e7ae899e8eb3',
-          label: 'Total',
+          label: 'All',
+          isAggregate: true,
         },
         {
           id: 'b936e2a5-a082-443c-a2ce-2c24195ad664',
@@ -80,11 +79,11 @@ export const absenceRatesByCharacteristicsDataSetMeta: DataSetMetaViewModel = {
       id: 'a3b0f933-2a70-49d9-a2b2-9e2dcecf2a34',
       label: 'Characteristic',
       name: 'characteristic',
-      totalId: '1df4d473-0a9f-4171-9194-8b5ed747f87d',
       options: [
         {
           id: '1df4d473-0a9f-4171-9194-8b5ed747f87d',
           label: 'Total',
+          isAggregate: true,
         },
         {
           id: '9b81021a-f60f-4d38-8816-dd3aef54de1b',
@@ -126,11 +125,11 @@ export const permanentExclusionsDataSetMeta: DataSetMetaViewModel = {
       id: '682a5316-150d-4814-85e0-54f319068e76',
       label: 'School type',
       name: 'school_type',
-      totalId: '49557959-21e3-4acd-97e8-961259bbb7ee',
       options: [
         {
           id: '49557959-21e3-4acd-97e8-961259bbb7ee',
-          label: 'Total',
+          label: 'All',
+          isAggregate: true,
         },
       ],
     },

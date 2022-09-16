@@ -274,6 +274,9 @@ components:
         label:
           type: string
           description: The human-readable label describing the filter item.
+        isAggregate:
+          type: boolean
+          description: Whether the filter item is an aggregate (i.e. 'all' or a 'total') of the other filter items.
       additionalProperties: false
     FilterMetaViewModel:
       type: object
@@ -303,10 +306,6 @@ components:
         name:
           type: string
           description: The name of the filter as it appears in the underlying data file.
-        totalId:
-          type: string
-          format: uuid
-          description: The ID of the filter item that is the aggregate total for this filter.
       additionalProperties: false
     FootnoteViewModel:
       type: object
