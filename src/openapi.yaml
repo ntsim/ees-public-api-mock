@@ -260,30 +260,6 @@ components:
             items:
               type: string
               description: The error message.
-    FilterGroupMetaViewModel:
-      type: object
-      description: A subgroup of a filter. This is composed of filter items.
-      required:
-        - id
-        - label
-        - options
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the filter group.
-        label:
-          type: string
-          description: |
-            The human-readable label describing the filter group. 
-            
-            A value of 'Default' indicates a generic fallback group where no categorisation has been provided for the constituent filter items.
-        options:
-          type: array
-          description: The filter item options belonging to this filter group.
-          items:
-            $ref: '#/components/schemas/FilterItemMetaViewModel'
-      additionalProperties: false
     FilterItemMetaViewModel:
       type: object
       description: A filterable facet (or characteristic) of a data point.
@@ -321,9 +297,9 @@ components:
           description: The human-readable label describing the filter.
         options:
           type: array
-          description: The filter group options belonging to this filter.
+          description: The filter item options belonging to this filter.
           items:
-            $ref: '#/components/schemas/FilterGroupMetaViewModel'
+            $ref: '#/components/schemas/FilterItemMetaViewModel'
         name:
           type: string
           description: The name of the filter as it appears in the underlying data file.
@@ -368,29 +344,6 @@ components:
         - PlanningArea
       type: string
       description: The geographic group/level for a data point's location.
-    IndicatorGroupMetaViewModel:
-      type: object
-      description: A group of indicators.
-      required:
-        - id
-        - label
-        - options
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the indicator group.
-        label:
-          type: string
-          description: |
-            The human-readable label of the indicator group.
-            
-            A value of 'Default' indicates a generic fallback group where no categorisation has been provided for the constituent indicators.
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/IndicatorMetaViewModel'
-      additionalProperties: false
     IndicatorMetaViewModel:
       type: object
       description: The type of measurement taken by a data point.
@@ -619,7 +572,7 @@ components:
           type: array
           description: The indicators associated with the data set query results.
           items:
-            $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
+            $ref: '#/components/schemas/IndicatorMetaViewModel'
         locations:
           type: array
           description: The locations associated with the data set query results.
@@ -676,7 +629,7 @@ components:
           type: array
           description: All of the indicators associated with the data set.
           items:
-            $ref: '#/components/schemas/IndicatorGroupMetaViewModel'
+            $ref: '#/components/schemas/IndicatorMetaViewModel'
         locations:
           type: array
           description: All of the locations associated with the data set.
