@@ -555,7 +555,7 @@ components:
           description: The IDs or codes of locations to filter results by.
           items:
             type: string
-        includeMeta:
+        showMeta:
           type: boolean
           description: Include the data set metadata associated with the results in the response.
           default: false
