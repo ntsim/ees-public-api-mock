@@ -73,6 +73,12 @@ export default function filterDataSetResults(
   return {
     ...dataSet,
     footnotes: filteredResults.length === 0 ? [] : dataSet.footnotes,
+    warnings:
+      filteredResults.length === 0
+        ? [
+            'No results matched the query criteria. You may need to refine your query.',
+          ]
+        : undefined,
     results: filteredResults,
   };
 }

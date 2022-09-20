@@ -609,6 +609,13 @@ components:
           description: The results of the data set query.
           items:
             $ref: '#/components/schemas/ObservationViewModel'
+        warnings:
+          type: array
+          description: |
+            A list of potential issues with the query that may need to be resolved to provide better results.
+          items:
+            type: string
+            description: The warning message.
         _links:
           type: object
           additionalProperties:
