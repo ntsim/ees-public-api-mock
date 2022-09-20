@@ -235,6 +235,7 @@ components:
   schemas:
     ApiErrorViewModel:
       type: object
+      description: Describes an error returned from the API.
       required:
         - type
         - title
@@ -281,7 +282,7 @@ components:
     FilterMetaViewModel:
       type: object
       description: |
-        A group of filterable facets (or characteristics) for the data. This is composed of filter groups.
+        A group of filterable facets (or characteristics) for the data. This is composed of filter items.
       required:
         - id
         - label
@@ -323,6 +324,8 @@ components:
           description: The content of the footnote.
       additionalProperties: false
     GeographicLevel:
+      type: string
+      description: The geographic group/level for a data point's location.
       enum:
         - EnglishDevolvedArea
         - LocalAuthority
@@ -341,8 +344,6 @@ components:
         - Sponsor
         - Ward
         - PlanningArea
-      type: string
-      description: The geographic group/level for a data point's location.
     IndicatorMetaViewModel:
       type: object
       description: The type of measurement taken by a data point.
@@ -371,6 +372,7 @@ components:
       additionalProperties: false
     LinkViewModel:
       type: object
+      description: A link to the endpoint for a related resource.
       required:
         - href
       properties:
@@ -385,6 +387,7 @@ components:
           description: The HTTP method to use with this link.
     LocationMetaViewModel:
       type: object
+      description: The location that a data point was measured at.
       required:
         - id
         - level
@@ -497,7 +500,7 @@ components:
           minimum: 0
     PublicationSummaryViewModel:
       type: object
-      additionalProperties: false
+      description: Provides summary information about a publication.
       required:
         - id
         - title
@@ -518,8 +521,10 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/LinkViewModel'
+      additionalProperties: false
     DataSetQuery:
       type: object
+      description: A query for data from a data set matching specific facets.
       required:
         - timePeriod
         - filterItems
@@ -586,7 +591,7 @@ components:
             $ref: '#/components/schemas/TimePeriodMetaViewModel'
     DataSetResultsViewModel:
       type: object
-      description: Contains the results of a data set query, and any associated footnotes or meta (where applicable)
+      description: Contains the results of a data set query, and any associated footnotes or meta (where applicable).
       required:
         - footnotes
         - results
@@ -782,6 +787,7 @@ components:
         - `M1-12` - Month 1 to 12
     TimePeriodLabels:
       type: object
+      description: Describes a time period in human-readable format.
       required:
         - start
         - end
@@ -795,6 +801,7 @@ components:
       additionalProperties: false
     TimePeriodViewModel:
       type: object
+      description: A compact representation of a time period.
       required:
         - code
         - year
@@ -817,6 +824,7 @@ components:
               description: The time period in human-readable format.
     TimePeriodQuery:
       type: object
+      description: A query for data matching a specific start and end time.
       required:
         - startYear
         - startCode
