@@ -1,8 +1,20 @@
 import {
+  countryRegionLocationMeta,
+  englandLocationMeta,
+  regionLocationMeta,
+} from '../mocks/dataSetMeta';
+import {
   ObservationViewModel,
   DataSetQuery,
   DataSetResultsViewModel,
 } from '../schema';
+
+const locationCodesToIds = [englandLocationMeta, ...regionLocationMeta].reduce<
+  Record<string, string>
+>((acc, option) => {
+  acc[option.code] = option.id;
+  return acc;
+}, {});
 
 export default function filterDataSetResults(
   dataSet: DataSetResultsViewModel,
@@ -18,7 +30,12 @@ export default function filterDataSetResults(
         return false;
       }
 
-      if (!query.locations.includes(observation.locationId)) {
+      if (
+        !query.locations.some(
+          (location) =>
+            location === observation.locationId || locationCodesToIds[location]
+        )
+      ) {
         return false;
       }
 

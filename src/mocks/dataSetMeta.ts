@@ -7,23 +7,25 @@ export const englandLocationMeta: LocationMetaViewModel = {
   code: 'E92000001',
 };
 
-export const countryRegionalLocationMeta: LocationMetaViewModel[] = [
+export const regionLocationMeta: LocationMetaViewModel[] = [
+  {
+    id: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
+    label: 'North East',
+    level: 'Region',
+    code: 'E12000001',
+  },
+  {
+    id: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
+    label: 'North West',
+    level: 'Region',
+    code: 'E12000002',
+  },
+];
+
+export const countryRegionLocationMeta: LocationMetaViewModel[] = [
   {
     ...englandLocationMeta,
-    options: [
-      {
-        id: '6b0c3349-34c4-48d4-aa6e-745ab358acc1',
-        label: 'North East',
-        level: 'Region',
-        code: 'E12000001',
-      },
-      {
-        id: '520fa9b3-ea9f-4cf4-b5a7-de9539900771',
-        label: 'North West',
-        level: 'Region',
-        code: 'E12000002',
-      },
-    ],
+    options: regionLocationMeta,
   },
 ];
 
@@ -112,7 +114,7 @@ export const absenceRatesByCharacteristicsDataSetMeta: DataSetMetaViewModel = {
       decimalPlaces: 0,
     },
   ],
-  locations: countryRegionalLocationMeta,
+  locations: countryRegionLocationMeta,
   timePeriods: [
     { code: 'AY', label: '2018/19', year: 2018 },
     { code: 'AY', label: '2020/21', year: 2020 },

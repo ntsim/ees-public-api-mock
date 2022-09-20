@@ -542,10 +542,9 @@ components:
             format: uuid
         locations:
           type: array
-          description: The IDs of locations to filter results by.
+          description: The IDs or codes of locations to filter results by.
           items:
             type: string
-            format: uuid
         includeMeta:
           type: boolean
           description: Include the data set metadata associated with the results in the response.
