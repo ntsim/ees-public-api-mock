@@ -3,28 +3,29 @@ import express, { ErrorRequestHandler } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
 import path from 'path';
 import {
-  permanentExclusionsPublication,
-  publications,
-  pupilAbsencePublication,
-} from '../mocks/publications';
-import {
-  absenceRatesDataSetData,
   absenceRatesByCharacteristicsDataSetData,
+  absenceRatesDataSetData,
   permanentExclusionsDataSetData,
 } from '../mocks/dataSetData';
 import {
-  absenceRatesDataSetMeta,
   absenceRatesByCharacteristicsDataSetMeta,
+  absenceRatesDataSetMeta,
   permanentExclusionsDataSetMeta,
 } from '../mocks/dataSetMeta';
 import {
-  absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
+  absenceRatesDataSet,
   permanentExclusionsDataSet,
   permanentExclusionsDataSets,
   pupilAbsenceDataSets,
 } from '../mocks/dataSets';
+import {
+  permanentExclusionsPublication,
+  publications,
+  pupilAbsencePublication,
+} from '../mocks/publications';
 import { ApiErrorViewModel } from '../schema';
+import filterDataSetMeta from '../utils/filterDataSetMeta';
 import filterDataSetResults from '../utils/filterDataSetResults';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
 import paginateResults from '../utils/paginateResults';
@@ -77,15 +78,27 @@ app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
 });
 
 app.get('/api/v1/data-sets/:dataSetId/meta', (req, res) => {
+  const showFilterIds = Boolean(req.query.showFilterIds);
+
   switch (req.params.dataSetId) {
     case absenceRatesDataSet.id:
-      res.status(200).json(absenceRatesDataSetMeta);
+      res
+        .status(200)
+        .json(filterDataSetMeta(absenceRatesDataSetMeta, { showFilterIds }));
       break;
     case absenceRatesByCharacteristicsDataSet.id:
-      res.status(200).json(absenceRatesByCharacteristicsDataSetMeta);
+      res.status(200).json(
+        filterDataSetMeta(absenceRatesByCharacteristicsDataSetMeta, {
+          showFilterIds,
+        })
+      );
       break;
     case permanentExclusionsDataSet.id:
-      res.status(200).json(permanentExclusionsDataSetMeta);
+      res.status(200).json(
+        filterDataSetMeta(permanentExclusionsDataSetMeta, {
+          showFilterIds,
+        })
+      );
       break;
     default:
       res.status(404).json(notFoundError());

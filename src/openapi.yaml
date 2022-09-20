@@ -177,6 +177,13 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: showFilterIds
+          in: query
+          description: Include filter IDs in the response (defaults to false).
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Success
@@ -284,7 +291,6 @@ components:
       description: |
         A group of filterable facets (or characteristics) for the data. This is composed of filter items.
       required:
-        - id
         - label
         - options
         - name
@@ -422,7 +428,6 @@ components:
       type: object
       description: A group of data point measurements matching a set of facets (filters, indicators, locations, time periods).
       required:
-        - id
         - filterItemIds
         - geographicLevel
         - locationId
