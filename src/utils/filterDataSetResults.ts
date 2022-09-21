@@ -54,7 +54,7 @@ export default function filterDataSetResults(
       );
     })
     .map((observation) => {
-      const measures = Object.entries(observation.values).reduce<
+      const values = Object.entries(observation.values).reduce<
         ObservationViewModel['values']
       >((acc, [indicatorId, value]) => {
         if (query.indicators.includes(indicatorId)) {
@@ -66,7 +66,7 @@ export default function filterDataSetResults(
 
       return {
         ...observation,
-        measures,
+        values,
       };
     });
 
