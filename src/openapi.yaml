@@ -628,7 +628,7 @@ components:
       additionalProperties: false
     DataSetMetaViewModel:
       type: object
-      description: All of the metadata associated with the data set.
+      description: All the metadata associated with the data set.
       required:
         - filters
         - indicators
@@ -637,22 +637,22 @@ components:
       properties:
         filters:
           type: array
-          description: All of the filters associated with the data set.
+          description: All the filters associated with the data set.
           items:
             $ref: '#/components/schemas/FilterMetaViewModel'
         indicators:
           type: array
-          description: All of the indicators associated with the data set.
+          description: All the indicators associated with the data set.
           items:
             $ref: '#/components/schemas/IndicatorMetaViewModel'
         locations:
           type: array
-          description: All of the locations associated with the data set.
+          description: All the locations associated with the data set.
           items:
             $ref: '#/components/schemas/LocationMetaViewModel'
         timePeriods:
           type: array
-          description: All of the time periods associated with the data set.
+          description: All the time periods associated with the data set.
           items:
             $ref: '#/components/schemas/TimePeriodMetaViewModel'
       additionalProperties: false
