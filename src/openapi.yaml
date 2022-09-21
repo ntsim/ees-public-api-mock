@@ -566,7 +566,6 @@ components:
       description: The metadata associated with the data set query results.
       required:
         - filters
-        - footnotes
         - indicators
         - locations
         - timePeriodRange
