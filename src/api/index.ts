@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import express, { ErrorRequestHandler } from 'express';
+import express, { ErrorRequestHandler, Request, Response } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
 import path from 'path';
 import {
@@ -24,7 +24,8 @@ import {
   publications,
   pupilAbsencePublication,
 } from '../mocks/publications';
-import { ApiErrorViewModel } from '../schema';
+import { ApiErrorViewModel, DataSetResultsViewModel } from '../schema';
+import dataSetResultsToCsv from '../utils/dataSetResultsToCsv';
 import filterDataSetMeta from '../utils/filterDataSetMeta';
 import filterDataSetResults from '../utils/filterDataSetResults';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
@@ -108,24 +109,17 @@ app.get('/api/v1/data-sets/:dataSetId/meta', (req, res) => {
 app.post('/api/v1/data-sets/:dataSetId/query', (req, res) => {
   switch (req.params.dataSetId) {
     case absenceRatesDataSet.id:
-      res
-        .status(200)
-        .json(filterDataSetResults(absenceRatesDataSetData, req.body));
+      handleDataSetQuerySuccess(req, res, absenceRatesDataSetData);
       break;
     case absenceRatesByCharacteristicsDataSet.id:
-      res
-        .status(200)
-        .json(
-          filterDataSetResults(
-            absenceRatesByCharacteristicsDataSetData,
-            req.body
-          )
-        );
+      handleDataSetQuerySuccess(
+        req,
+        res,
+        absenceRatesByCharacteristicsDataSetData
+      );
       break;
     case permanentExclusionsDataSet.id:
-      res
-        .status(200)
-        .json(filterDataSetResults(permanentExclusionsDataSetData, req.body));
+      handleDataSetQuerySuccess(req, res, permanentExclusionsDataSetData);
       break;
     default:
       res.status(404).json(notFoundError());
@@ -172,4 +166,26 @@ function notFoundError(): ApiErrorViewModel {
     type: 'https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4',
     title: 'Not Found',
   };
+}
+
+function handleDataSetQuerySuccess(
+  req: Request,
+  res: Response,
+  results: DataSetResultsViewModel
+) {
+  res.status(200);
+
+  const filteredResults = filterDataSetResults(results, req.body);
+
+  if (req.headers.accept?.toLowerCase() !== 'text/csv') {
+    const body: DataSetResultsViewModel = {
+      ...filteredResults,
+      meta: req.body.showMeta ? filteredResults.meta : undefined,
+    };
+
+    return res.json(body);
+  }
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.send(dataSetResultsToCsv(filteredResults));
 }

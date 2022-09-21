@@ -71,10 +71,7 @@ export default function filterDataSetResults(
   return {
     ...dataSet,
     footnotes: filteredResults.length === 0 ? [] : dataSet.footnotes,
-    meta:
-      query.showMeta && dataSet.meta
-        ? filterMeta(dataSet.meta, filteredResults)
-        : undefined,
+    meta: dataSet.meta ? filterMeta(dataSet.meta, filteredResults) : undefined,
     warnings:
       filteredResults.length === 0
         ? [

@@ -131,6 +131,9 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/DataSetResultsViewModel'
+            text/csv:
+              schema:
+                type: string
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
