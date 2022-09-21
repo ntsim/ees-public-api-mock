@@ -1,9 +1,19 @@
 import {
+  absenceRatesByCharacteristicsDataSetMeta,
+  absenceRatesDataSetMeta,
+  permanentExclusionsDataSetMeta,
+} from './dataSetMeta';
+import {
   absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
   permanentExclusionsDataSet,
 } from './dataSets';
-import { DataSetResultsViewModel, DataSetViewModel } from '../schema';
+import {
+  DataSetMetaViewModel,
+  DataSetResultsMetaViewModel,
+  DataSetResultsViewModel,
+  DataSetViewModel,
+} from '../schema';
 
 export const absenceRatesDataSetData = createLinks(
   {
@@ -19,6 +29,7 @@ export const absenceRatesDataSetData = createLinks(
           'Total includes state-funded primary, secondary and special schools. Data for special schools is available from 2016/17 to present.',
       },
     ],
+    meta: transformMeta(absenceRatesDataSetMeta),
     results: [
       {
         id: 'a1c0d27a-b645-40f8-3395-08da0807f3aa',
@@ -47,6 +58,7 @@ export const absenceRatesByCharacteristicsDataSetData = createLinks(
           'Total includes state-funded primary, secondary and special schools. Data for special schools is available from 2016/17 to present.',
       },
     ],
+    meta: transformMeta(absenceRatesByCharacteristicsDataSetMeta),
     results: [
       {
         id: '469f4daa-c307-477a-5b3a-08da0b95637f',
@@ -398,6 +410,7 @@ export const permanentExclusionsDataSetData = createLinks(
           'For 2019/20 and 2020/21, while suspensions and permanent exclusions were possible throughout the academic year, pandemic restrictions will have had an impact on the numbers presented and caution should be taken when comparing across years.',
       },
     ],
+    meta: transformMeta(permanentExclusionsDataSetMeta),
     results: [
       {
         id: 'd45c2561-92f6-462b-5b10-08da6fdcfe48',
@@ -455,5 +468,15 @@ function createLinks(
         href: `/api/v1/data-sets/${dataSet.id}/meta`,
       },
     },
+  };
+}
+
+function transformMeta({
+  timePeriods,
+  ...meta
+}: DataSetMetaViewModel): DataSetResultsMetaViewModel {
+  return {
+    ...meta,
+    timePeriodRange: timePeriods,
   };
 }

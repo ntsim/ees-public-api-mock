@@ -1,12 +1,10 @@
-import {
-  countryRegionLocationMeta,
-  englandLocationMeta,
-  regionLocationMeta,
-} from '../mocks/dataSetMeta';
+import { englandLocationMeta, regionLocationMeta } from '../mocks/dataSetMeta';
 import {
   ObservationViewModel,
   DataSetQuery,
   DataSetResultsViewModel,
+  DataSetResultsMetaViewModel,
+  LocationMetaViewModel,
 } from '../schema';
 
 const locationCodesToIds = [englandLocationMeta, ...regionLocationMeta].reduce<
@@ -20,7 +18,7 @@ export default function filterDataSetResults(
   dataSet: DataSetResultsViewModel,
   query: DataSetQuery
 ): DataSetResultsViewModel {
-  const filteredResults = dataSet.results
+  const filteredResults: ObservationViewModel[] = dataSet.results
     .filter((observation) => {
       if (
         !observation.filterItemIds.some((filter) =>
@@ -73,6 +71,10 @@ export default function filterDataSetResults(
   return {
     ...dataSet,
     footnotes: filteredResults.length === 0 ? [] : dataSet.footnotes,
+    meta:
+      query.showMeta && dataSet.meta
+        ? filterMeta(dataSet.meta, filteredResults)
+        : undefined,
     warnings:
       filteredResults.length === 0
         ? [
@@ -81,4 +83,57 @@ export default function filterDataSetResults(
         : undefined,
     results: filteredResults,
   };
+}
+
+function filterMeta(
+  meta: DataSetResultsMetaViewModel,
+  results: ObservationViewModel[]
+): DataSetResultsMetaViewModel {
+  const filters = meta.filters
+    .map((filter) => ({
+      ...filter,
+      options: filter.options.filter((option) =>
+        results.some((result) => result.filterItemIds.includes(option.id))
+      ),
+    }))
+    .filter((filter) => filter.options.length > 0);
+
+  const locations = filterLocations(meta.locations, results);
+
+  const indicators = meta.indicators.filter((indicator) =>
+    results.some((result) => !!result.values[indicator.id])
+  );
+
+  const timePeriodRange = meta.timePeriodRange.filter((timePeriod) =>
+    results.some(
+      (result) =>
+        result.timePeriod.code === timePeriod.code &&
+        result.timePeriod.year === timePeriod.year
+    )
+  );
+
+  return {
+    filters,
+    locations,
+    indicators,
+    timePeriodRange,
+  };
+}
+
+function filterLocations(
+  locations: LocationMetaViewModel[],
+  results: ObservationViewModel[]
+): LocationMetaViewModel[] {
+  return locations
+    .map((location) => ({
+      ...location,
+      options: location.options
+        ? filterLocations(location.options, results)
+        : undefined,
+    }))
+    .filter(
+      (location) =>
+        results.some((result) => result.locationId === location.id) ||
+        !!location.options?.length
+    );
 }
