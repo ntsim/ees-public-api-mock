@@ -21,7 +21,7 @@ export default function filterDataSetResults(
   const filteredResults: ObservationViewModel[] = dataSet.results
     .filter((observation) => {
       if (
-        !observation.filterItemIds.some((filter) =>
+        !observation.filterItemIds.every((filter) =>
           query.filterItems.includes(filter)
         )
       ) {
