@@ -271,6 +271,163 @@ components:
             items:
               type: string
               description: The error message.
+    DataSetQuery:
+      type: object
+      description: A query for data from a data set matching specific facets.
+      required:
+        - timePeriod
+        - filterItems
+        - indicators
+        - locations
+      properties:
+        timePeriod:
+          $ref: '#/components/schemas/TimePeriodQuery'
+        filterItems:
+          type: array
+          description: The IDs of filter items to filter results by.
+          items:
+            type: string
+            format: uuid
+        indicators:
+          type: array
+          description: The IDs of indicators to filter results by.
+          items:
+            type: string
+            format: uuid
+        locations:
+          type: array
+          description: The IDs or codes of locations to filter results by.
+          items:
+            type: string
+        showMeta:
+          type: boolean
+          description: Include the data set metadata associated with the results in the response.
+          default: false
+      additionalProperties: false
+    DataSetViewModel:
+      type: object
+      description: Describes and provides high-level information about a data set.
+      required:
+        - id
+        - name
+        - content
+        - timePeriods
+        - geographicLevels
+        - _links
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the data set.
+        name:
+          type: string
+          description: The name of the data set.
+        content:
+          type: string
+          description: A description of the data set's contents.
+        timePeriods:
+          $ref: '#/components/schemas/TimePeriodLabels'
+        geographicLevels:
+          type: array
+          description: The geographic levels available in the data set.
+          items:
+            type: string
+        _links:
+          $ref: '#/components/schemas/LinksViewModel'
+      additionalProperties: false
+    DataSetResultsMetaViewModel:
+      type: object
+      additionalProperties: false
+      description: The metadata associated with the data set query results.
+      required:
+        - filters
+        - indicators
+        - locations
+        - timePeriodRange
+      properties:
+        filters:
+          type: array
+          description: The filters associated with the data set query results.
+          items:
+            $ref: '#/components/schemas/FilterMetaViewModel'
+        indicators:
+          type: array
+          description: The indicators associated with the data set query results.
+          items:
+            $ref: '#/components/schemas/IndicatorMetaViewModel'
+        locations:
+          type: array
+          description: The locations associated with the data set query results.
+          items:
+            $ref: '#/components/schemas/LocationMetaViewModel'
+        timePeriodRange:
+          type: array
+          description: |
+            The complete range of time periods between the requested start and end time periods.
+            
+            Note that this represents a complete time series so it may include time periods that do not associated results.
+          items:
+            $ref: '#/components/schemas/TimePeriodMetaViewModel'
+    DataSetResultsViewModel:
+      type: object
+      description: Contains the results of a data set query, and any associated footnotes or meta (where applicable).
+      required:
+        - footnotes
+        - results
+        - _links
+      properties:
+        meta:
+          $ref: '#/components/schemas/DataSetResultsMetaViewModel'
+        footnotes:
+          type: array
+          description: The footnotes relevant to the data set query results.
+          items:
+            $ref: '#/components/schemas/FootnoteViewModel'
+        results:
+          type: array
+          description: The results of the data set query.
+          items:
+            $ref: '#/components/schemas/ObservationViewModel'
+        warnings:
+          type: array
+          description: |
+            A list of potential issues with the query that may need to be resolved to provide better results.
+          items:
+            type: string
+            description: The warning message.
+        _links:
+          $ref: '#/components/schemas/LinksViewModel'
+      additionalProperties: false
+    DataSetMetaViewModel:
+      type: object
+      description: All the metadata associated with the data set.
+      required:
+        - filters
+        - indicators
+        - locations
+        - timePeriods
+      properties:
+        filters:
+          type: array
+          description: All the filters associated with the data set.
+          items:
+            $ref: '#/components/schemas/FilterMetaViewModel'
+        indicators:
+          type: array
+          description: All the indicators associated with the data set.
+          items:
+            $ref: '#/components/schemas/IndicatorMetaViewModel'
+        locations:
+          type: array
+          description: All the locations associated with the data set.
+          items:
+            $ref: '#/components/schemas/LocationMetaViewModel'
+        timePeriods:
+          type: array
+          description: All the time periods associated with the data set.
+          items:
+            $ref: '#/components/schemas/TimePeriodMetaViewModel'
+      additionalProperties: false
     FilterItemMetaViewModel:
       type: object
       description: A filterable facet (or characteristic) of a data point.
@@ -529,163 +686,6 @@ components:
         slug:
           type: string
           description: The URL slug of the publication.
-        _links:
-          $ref: '#/components/schemas/LinksViewModel'
-      additionalProperties: false
-    DataSetQuery:
-      type: object
-      description: A query for data from a data set matching specific facets.
-      required:
-        - timePeriod
-        - filterItems
-        - indicators
-        - locations
-      properties:
-        timePeriod:
-          $ref: '#/components/schemas/TimePeriodQuery'
-        filterItems:
-          type: array
-          description: The IDs of filter items to filter results by.
-          items:
-            type: string
-            format: uuid
-        indicators:
-          type: array
-          description: The IDs of indicators to filter results by.
-          items:
-            type: string
-            format: uuid
-        locations:
-          type: array
-          description: The IDs or codes of locations to filter results by.
-          items:
-            type: string
-        showMeta:
-          type: boolean
-          description: Include the data set metadata associated with the results in the response.
-          default: false
-      additionalProperties: false
-    DataSetResultsMetaViewModel:
-      type: object
-      additionalProperties: false
-      description: The metadata associated with the data set query results.
-      required:
-        - filters
-        - indicators
-        - locations
-        - timePeriodRange
-      properties:
-        filters:
-          type: array
-          description: The filters associated with the data set query results.
-          items:
-            $ref: '#/components/schemas/FilterMetaViewModel'
-        indicators:
-          type: array
-          description: The indicators associated with the data set query results.
-          items:
-            $ref: '#/components/schemas/IndicatorMetaViewModel'
-        locations:
-          type: array
-          description: The locations associated with the data set query results.
-          items:
-            $ref: '#/components/schemas/LocationMetaViewModel'
-        timePeriodRange:
-          type: array
-          description: |
-            The complete range of time periods between the requested start and end time periods.
-            
-            Note that this represents a complete time series so it may include time periods that do not associated results.
-          items:
-            $ref: '#/components/schemas/TimePeriodMetaViewModel'
-    DataSetResultsViewModel:
-      type: object
-      description: Contains the results of a data set query, and any associated footnotes or meta (where applicable).
-      required:
-        - footnotes
-        - results
-        - _links
-      properties:
-        meta:
-          $ref: '#/components/schemas/DataSetResultsMetaViewModel'
-        footnotes:
-          type: array
-          description: The footnotes relevant to the data set query results.
-          items:
-            $ref: '#/components/schemas/FootnoteViewModel'
-        results:
-          type: array
-          description: The results of the data set query.
-          items:
-            $ref: '#/components/schemas/ObservationViewModel'
-        warnings:
-          type: array
-          description: |
-            A list of potential issues with the query that may need to be resolved to provide better results.
-          items:
-            type: string
-            description: The warning message.
-        _links:
-          $ref: '#/components/schemas/LinksViewModel'
-      additionalProperties: false
-    DataSetMetaViewModel:
-      type: object
-      description: All the metadata associated with the data set.
-      required:
-        - filters
-        - indicators
-        - locations
-        - timePeriods
-      properties:
-        filters:
-          type: array
-          description: All the filters associated with the data set.
-          items:
-            $ref: '#/components/schemas/FilterMetaViewModel'
-        indicators:
-          type: array
-          description: All the indicators associated with the data set.
-          items:
-            $ref: '#/components/schemas/IndicatorMetaViewModel'
-        locations:
-          type: array
-          description: All the locations associated with the data set.
-          items:
-            $ref: '#/components/schemas/LocationMetaViewModel'
-        timePeriods:
-          type: array
-          description: All the time periods associated with the data set.
-          items:
-            $ref: '#/components/schemas/TimePeriodMetaViewModel'
-      additionalProperties: false
-    DataSetViewModel:
-      type: object
-      description: Describes and provides high-level information about a data set.
-      required:
-        - id
-        - name
-        - content
-        - timePeriods
-        - geographicLevels
-        - _links
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the data set.
-        name:
-          type: string
-          description: The name of the data set.
-        content:
-          type: string
-          description: A description of the data set's contents.
-        timePeriods:
-          $ref: '#/components/schemas/TimePeriodLabels'
-        geographicLevels:
-          type: array
-          description: The geographic levels available in the data set.
-          items:
-            type: string
         _links:
           $ref: '#/components/schemas/LinksViewModel'
       additionalProperties: false
