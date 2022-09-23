@@ -394,6 +394,12 @@ components:
         method:
           type: string
           description: The HTTP method to use with this link.
+    LinksViewModel:
+      type: object
+      description: | 
+        A map of links to related resources/endpoints. A link to the current resource (i.e. `self`) is always provided.
+      additionalProperties:
+        $ref: '#/components/schemas/LinkViewModel'
     LocationMetaViewModel:
       type: object
       description: The location that a data point was measured at.
@@ -477,9 +483,7 @@ components:
           items:
             $ref: '#/components/schemas/PublicationSummaryViewModel'
         _links:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LinkViewModel'
+          $ref: '#/components/schemas/LinksViewModel'
     PagingViewModel:
       type: object
       description: Provides metadata for use in pagination.
@@ -526,9 +530,7 @@ components:
           type: string
           description: The URL slug of the publication.
         _links:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LinkViewModel'
+          $ref: '#/components/schemas/LinksViewModel'
       additionalProperties: false
     DataSetQuery:
       type: object
@@ -624,9 +626,7 @@ components:
             type: string
             description: The warning message.
         _links:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LinkViewModel'
+          $ref: '#/components/schemas/LinksViewModel'
       additionalProperties: false
     DataSetMetaViewModel:
       type: object
@@ -687,9 +687,7 @@ components:
           items:
             type: string
         _links:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LinkViewModel'
+          $ref: '#/components/schemas/LinksViewModel'
       additionalProperties: false
     TimePeriodCode:
       enum:
