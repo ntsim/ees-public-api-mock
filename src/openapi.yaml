@@ -255,16 +255,7 @@ components:
           type: number
           description: The HTTP status code.
         errors:
-          type: object
-          description: |
-            A dictionary of errors associated to the request.
-            
-            The key relates to a specific property in the request or the request itself when it is an empty string (`""`). The value is a list of error messages associated to the key.
-          additionalProperties:
-            type: array
-            items:
-              type: string
-              description: The error message.
+          $ref: '#/components/schemas/ErrorDictionary'
     DataSetQuery:
       type: object
       description: A query for data from a data set matching specific facets.
@@ -422,6 +413,18 @@ components:
           items:
             $ref: '#/components/schemas/TimePeriodMetaViewModel'
       additionalProperties: false
+    ErrorDictionary:
+      type: object
+      description: |
+        A dictionary of errors associated to a model.
+
+        - The key relates to a specific property on the model, or the entire model when it is an empty string (`""`). 
+        - The value is a list of error messages associated to the key.
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          description: The error message.
     FilterItemMetaViewModel:
       type: object
       description: A filterable facet (or characteristic) of a data point.
