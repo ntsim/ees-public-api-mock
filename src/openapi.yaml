@@ -107,17 +107,11 @@ paths:
             type: string
             format: uuid
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/DataSetQuery'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/DataSetQuery'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/DataSetQuery'
-        description: ''
       responses:
         '200':
           description: Success
