@@ -135,7 +135,7 @@ paths:
   /api/v1/data-sets/{dataSetId}/file:
     get:
       operationId: GetDataSetFile
-      summary: Get a data set  underlying file
+      summary: Get a data set's underlying file
       description: Get a data set's underlying file (as a csv contained inside a zip).
       tags:
         - Data Set
