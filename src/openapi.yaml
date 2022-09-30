@@ -545,10 +545,17 @@ components:
         method:
           type: string
           description: The HTTP method to use with this link.
+      example:
+        href: 'https://url-to-resource'
     LinksViewModel:
       type: object
       description: | 
         A map of links to related resources/endpoints. A link to the current resource (i.e. `self`) is always provided.
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/LinkViewModel'
       additionalProperties:
         $ref: '#/components/schemas/LinkViewModel'
     LocationMetaViewModel:
