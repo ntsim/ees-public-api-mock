@@ -44,13 +44,7 @@ paths:
         '200':
           description: Success
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
             application/json:
-              schema:
-                $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
-            text/json:
               schema:
                 $ref: '#/components/schemas/PagedPublicationSummaryViewModel'
   /api/v1/publications/{publicationId}/data-sets:
@@ -72,17 +66,7 @@ paths:
         '200':
           description: Success
           content:
-            text/plain:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DataSetViewModel'
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DataSetViewModel'
-            text/json:
               schema:
                 type: array
                 items:
@@ -108,7 +92,7 @@ paths:
             format: uuid
         - name: Accept
           in: header
-          description: The media type to format the data in. Use `text/csv` to return data as a CSV.
+          description: The media type to format the data in. Use `text/csv` to return data in CSV format.
           schema:
             type: string
             enum:
@@ -124,13 +108,7 @@ paths:
         '200':
           description: Success
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/DataSetResultsViewModel'
             application/json:
-              schema:
-                $ref: '#/components/schemas/DataSetResultsViewModel'
-            text/json:
               schema:
                 $ref: '#/components/schemas/DataSetResultsViewModel'
             text/csv:
@@ -193,13 +171,7 @@ paths:
         '200':
           description: Success
           content:
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/DataSetMetaViewModel'
             application/json:
-              schema:
-                $ref: '#/components/schemas/DataSetMetaViewModel'
-            text/json:
               schema:
                 $ref: '#/components/schemas/DataSetMetaViewModel'
         '400':
@@ -211,17 +183,7 @@ components:
     BadRequest:
       description: Bad Request. Usually indicates a validation error or a malformed request.
       content:
-        text/plain:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ApiErrorViewModel'
         application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ApiErrorViewModel'
-        text/json:
           schema:
             type: array
             items:
@@ -229,17 +191,7 @@ components:
     NotFound:
       description: Not Found. Indicates that a specified resource could not be found.
       content:
-        text/plain:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ApiErrorViewModel'
         application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ApiErrorViewModel'
-        text/json:
           schema:
             type: array
             items:
