@@ -106,6 +106,14 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: Accept
+          in: header
+          description: The media type to format the data in. Use `text/csv` to return data as a CSV.
+          schema:
+            type: string
+            enum:
+              - application/json
+              - text/csv
       requestBody:
         required: true
         content:
