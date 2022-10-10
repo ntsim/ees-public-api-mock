@@ -60,7 +60,7 @@ app.get('/api/v1/publications', (req, res) => {
   res.status(200).json(
     paginateResults(publications, {
       ...req.query,
-      baseUrl: '/api/publications',
+      baseUrl: '/api/v1/publications',
     })
   );
 });
