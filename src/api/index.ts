@@ -57,8 +57,16 @@ app.use('/docs', express.static(apiSpec));
 // Routes
 
 app.get('/api/v1/publications', (req, res) => {
+  const { search } = req.query;
+  const filteredPublications =
+    typeof search === 'string'
+      ? publications.filter((publication) =>
+          publication.title.toLowerCase().includes(search.toLowerCase())
+        )
+      : publications;
+
   res.status(200).json(
-    paginateResults(publications, {
+    paginateResults(filteredPublications, {
       ...req.query,
       baseUrl: '/api/v1/publications',
     })

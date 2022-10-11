@@ -40,6 +40,11 @@ paths:
             type: number
             minimum: 0
             maximum: 20
+        - name: search
+          in: query
+          description: A search term to find matching publications.
+          schema:
+            type: string
       responses:
         '200':
           description: Success
