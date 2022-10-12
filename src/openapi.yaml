@@ -83,7 +83,7 @@ paths:
   /api/v1/data-sets/{dataSetId}/query:
     post:
       operationId: QueryDataSet
-      summary: Query a data set for specific data
+      summary: Query a data set
       description: Query a data set, returning the filtered results.
       tags:
         - Data Set
