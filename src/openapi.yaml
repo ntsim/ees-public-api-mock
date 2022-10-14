@@ -246,7 +246,7 @@ components:
             format: uuid
         locations:
           type: array
-          description: The IDs or codes of locations to filter results by.
+          description: The IDs or codes (if available) of locations to filter results by.
           items:
             type: string
         showMeta:
