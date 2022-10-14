@@ -141,7 +141,7 @@ function getLocationFields(locations: LocationMetaViewModel[]): string[] {
   const level = snakeCase(firstLocation.level);
   const fields = [level, `${level}_code`];
 
-  if (firstLocation.options) {
+  if (firstLocation.options && firstLocation.options.length > 0) {
     return [...fields, ...getLocationFields(firstLocation.options)];
   }
 
