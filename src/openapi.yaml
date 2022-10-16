@@ -100,6 +100,7 @@ paths:
           description: The media type to format the data in. Use `text/csv` to return data in CSV format.
           schema:
             type: string
+            default: application/json
             enum:
               - application/json
               - text/csv
