@@ -307,10 +307,12 @@ components:
           items:
             $ref: '#/components/schemas/IndicatorMetaViewModel'
         locations:
-          type: array
+          type: object
           description: The locations associated with the data set query results.
-          items:
-            $ref: '#/components/schemas/LocationMetaViewModel'
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/LocationMetaViewModel'
         timePeriodRange:
           type: array
           description: |
@@ -369,10 +371,12 @@ components:
           items:
             $ref: '#/components/schemas/IndicatorMetaViewModel'
         locations:
-          type: array
+          type: object
           description: All the locations associated with the data set.
-          items:
-            $ref: '#/components/schemas/LocationMetaViewModel'
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/LocationMetaViewModel'
         timePeriods:
           type: array
           description: All the time periods associated with the data set.

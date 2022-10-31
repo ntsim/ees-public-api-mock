@@ -1,3 +1,4 @@
+import { mapValues, omitBy } from 'lodash';
 import { englandLocationMeta, regionLocationMeta } from '../mocks/dataSetMeta';
 import {
   ObservationViewModel,
@@ -95,7 +96,10 @@ function filterMeta(
     }))
     .filter((filter) => filter.options.length > 0);
 
-  const locations = filterLocations(meta.locations, results);
+  const locations = omitBy(
+    mapValues(meta.locations, (level) => filterLocations(level, results)),
+    (level) => level.length === 0
+  );
 
   const indicators = meta.indicators.filter((indicator) =>
     results.some((result) => !!result.values[indicator.id])

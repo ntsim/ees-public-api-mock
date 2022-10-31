@@ -15,7 +15,9 @@ export default function dataSetResultsToCsv({
   const indicatorFields =
     meta?.indicators.map((indicator) => indicator.name) ?? [];
 
-  const locationFields = getLocationFields(meta?.locations ?? []);
+  const locationFields = getLocationFields(
+    Object.values(meta?.locations ?? {}).flat()
+  );
 
   const fields = [
     ...locationFields,
@@ -86,7 +88,10 @@ function getData({
       if (fields.locations.includes(field)) {
         const level = field.replace('_code', '').replace('_', '').toLowerCase();
 
-        const locationPath = findLocationPath(result, meta.locations);
+        const locationPath = findLocationPath(
+          result,
+          Object.values(meta.locations).flat()
+        );
         const location = locationPath.find(
           (part) => part.level.toLowerCase() === level
         );

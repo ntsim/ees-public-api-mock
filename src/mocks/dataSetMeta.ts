@@ -52,7 +52,9 @@ export const absenceRatesDataSetMeta: DataSetMetaViewModel = {
       decimalPlaces: 0,
     },
   ],
-  locations: [englandLocationMeta],
+  locations: {
+    Country: [englandLocationMeta],
+  },
   timePeriods: [
     { code: 'AY', label: '2018/19', year: 2018 },
     { code: 'AY', label: '2020/21', year: 2020 },
@@ -114,7 +116,9 @@ export const absenceRatesByCharacteristicsDataSetMeta: DataSetMetaViewModel = {
       decimalPlaces: 0,
     },
   ],
-  locations: countryRegionLocationMeta,
+  locations: {
+    Country: countryRegionLocationMeta,
+  },
   timePeriods: [
     { code: 'AY', label: '2018/19', year: 2018 },
     { code: 'AY', label: '2020/21', year: 2020 },
@@ -152,7 +156,9 @@ export const permanentExclusionsDataSetMeta: DataSetMetaViewModel = {
       decimalPlaces: 2,
     },
   ],
-  locations: [englandLocationMeta],
+  locations: {
+    Country: [englandLocationMeta],
+  },
   timePeriods: [
     { code: 'AY', label: '2018/19', year: 2018 },
     { code: 'AY', label: '2019/20', year: 2019 },
