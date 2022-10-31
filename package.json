@@ -5,7 +5,8 @@
   "scripts": {
     "import": "ts-node --transpile-only src/scripts/import.ts",
     "start": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/api",
-    "schema": "openapi --input src/openapi.yaml --output src/schema --useUnionTypes"
+    "schema": "openapi --input src/openapi.yaml --output src/schema --useUnionTypes",
+    "tsc": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",
