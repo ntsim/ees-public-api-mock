@@ -1,6 +1,5 @@
 .idea
 node_modules
 data-imports
-src/data
 src/schema
 .vercel
