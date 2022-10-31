@@ -44,3 +44,23 @@ export const geographicLevelColumns: Record<
   Sponsor: { code: 'sponsor_id', name: 'sponsor_name' },
   Ward: { code: 'ward_code', name: 'ward_name' },
 };
+
+export const geographicLevelCsvLabels: Record<GeographicLevel, string> = {
+  Country: 'National',
+  EnglishDevolvedArea: 'English devolved area',
+  Institution: 'Institution',
+  LocalAuthority: 'Local authority',
+  LocalAuthorityDistrict: 'Local authority district',
+  LocalEnterprisePartnership: 'Local enterprise partnership',
+  MayoralCombinedAuthority: 'Mayoral combined authority',
+  MultiAcademyTrust: 'MAT',
+  OpportunityArea: 'Opportunity area',
+  ParliamentaryConstituency: 'Parliamentary constituency',
+  PlanningArea: 'Planning area',
+  Provider: 'Provider',
+  Region: 'Regional',
+  RscRegion: 'RSC region',
+  School: 'School',
+  Sponsor: 'Sponsor',
+  Ward: 'Ward',
+};

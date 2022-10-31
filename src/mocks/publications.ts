@@ -11,9 +11,15 @@ export const permanentExclusionsPublication = createPublication({
   title: 'Permanent exclusions and suspensions in England',
 });
 
+export const spcPublication = createPublication({
+  id: '638482b6-d015-4798-a1a4-e2311253b3e1',
+  title: 'Schools, pupils and their characteristics',
+});
+
 export const publications: PublicationSummaryViewModel[] = [
   pupilAbsencePublication,
   permanentExclusionsPublication,
+  spcPublication,
 ];
 
 function createPublication(

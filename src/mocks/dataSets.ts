@@ -36,12 +36,41 @@ export const permanentExclusionsDataSet = createDataSet({
   },
 });
 
+export const spcEthnicityLanguageDataSet = createDataSet({
+  id: '9eee125b-5538-49b8-aa49-4fda877b5e57',
+  content:
+    '<p>Number of pupils in state-funded nursery, primary, secondary and special schools, non-maintained special schools and pupil referral units by language and ethnicity.</p>',
+  name: 'Pupil characteristics - Ethnicity and Language',
+  geographicLevels: ['National', 'Local Authority', 'Regional'],
+  timePeriods: {
+    start: '2015/16',
+    end: '2021/22',
+  },
+});
+
+export const spcYearGroupGenderDataSet = createDataSet({
+  id: 'c5292537-e29a-4dba-a361-8363d2fb08f1',
+  content:
+    '<p>Number of pupils in state-funded nursery, primary, secondary and special schools, non-maintained special schools, pupil referral units and independent schools by national curriculum year and gender.</p>',
+  name: 'Pupil characteristics - Year group and Gender',
+  geographicLevels: ['National', 'Local Authority', 'Regional'],
+  timePeriods: {
+    start: '2015/16',
+    end: '2021/22',
+  },
+});
+
 export const pupilAbsenceDataSets = [
   absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
 ];
 
 export const permanentExclusionsDataSets = [permanentExclusionsDataSet];
+
+export const spcDataSets = [
+  spcEthnicityLanguageDataSet,
+  spcYearGroupGenderDataSet,
+];
 
 function createDataSet(dataSet: Omit<DataSetViewModel, '_links'>) {
   return {

@@ -18,20 +18,34 @@ import {
   permanentExclusionsDataSet,
   permanentExclusionsDataSets,
   pupilAbsenceDataSets,
+  spcDataSets,
+  spcEthnicityLanguageDataSet,
+  spcYearGroupGenderDataSet,
 } from '../mocks/dataSets';
 import {
   permanentExclusionsPublication,
   publications,
   pupilAbsencePublication,
+  spcPublication,
 } from '../mocks/publications';
 import { ApiErrorViewModel, DataSetResultsViewModel } from '../schema';
 import dataSetResultsToCsv from '../utils/dataSetResultsToCsv';
 import filterDataSetMeta from '../utils/filterDataSetMeta';
 import filterDataSetResults from '../utils/filterDataSetResults';
+import getDataSetMeta from '../utils/getDataSetMeta';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
 import paginateResults from '../utils/paginateResults';
 
 const apiSpec = path.resolve(__dirname, '../openapi.yaml');
+
+const spcEthnicityLanguageDataSetDir = path.resolve(
+  __dirname,
+  '../data/spc_pupils_ethnicity_and_language'
+);
+const spcYearGroupGenderDataSetDir = path.resolve(
+  __dirname,
+  '../data/spc_pupils_fsm_ethnicity_yrgp'
+);
 
 const app = express();
 
@@ -44,6 +58,7 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec,
     validateApiSpec: true,
+    validateFormats: false,
     validateRequests: {
       allowUnknownQueryParameters: true,
     },
@@ -81,12 +96,15 @@ app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
     case permanentExclusionsPublication.id:
       res.status(200).json(permanentExclusionsDataSets);
       break;
+    case spcPublication.id:
+      res.status(200).json(spcDataSets);
+      break;
     default:
       res.status(404).json(notFoundError());
   }
 });
 
-app.get('/api/v1/data-sets/:dataSetId/meta', (req, res) => {
+app.get('/api/v1/data-sets/:dataSetId/meta', async (req, res) => {
   const showFilterIds = Boolean(req.query.showFilterIds);
 
   switch (req.params.dataSetId) {
@@ -109,6 +127,18 @@ app.get('/api/v1/data-sets/:dataSetId/meta', (req, res) => {
         })
       );
       break;
+    case spcEthnicityLanguageDataSet.id: {
+      const meta = await getDataSetMeta(spcEthnicityLanguageDataSet.id);
+
+      res.status(200).json(meta);
+      break;
+    }
+    case spcYearGroupGenderDataSet.id: {
+      const meta = await getDataSetMeta(spcYearGroupGenderDataSet.id);
+
+      res.status(200).json(meta);
+      break;
+    }
     default:
       res.status(404).json(notFoundError());
   }
