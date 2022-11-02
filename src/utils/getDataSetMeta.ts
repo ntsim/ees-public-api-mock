@@ -10,6 +10,7 @@ import {
 } from '../schema';
 import { Filter, Indicator, TimePeriod } from '../types/dbSchemas';
 import Database from './Database';
+import formatTimePeriodLabel from './formatTimePeriodLabel';
 import getDataSetDir from './getDataSetDir';
 import {
   createFilterIdHasher,
@@ -49,11 +50,15 @@ async function getTimePeriodsMeta(
        FROM '${dataDir}/time_periods.parquet';`
   );
 
-  return timePeriods.map((timePeriod) => ({
-    code: parseTimePeriodCode(timePeriod.identifier),
-    label: timePeriod.identifier,
-    year: timePeriod.year,
-  }));
+  return timePeriods.map((timePeriod) => {
+    const code = parseTimePeriodCode(timePeriod.identifier);
+
+    return {
+      code,
+      label: formatTimePeriodLabel(code, timePeriod.year),
+      year: timePeriod.year,
+    };
+  });
 }
 
 async function getLocationsMeta(
