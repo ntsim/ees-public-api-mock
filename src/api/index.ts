@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import compression from 'compression';
 import express, { ErrorRequestHandler, Request, Response } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
 import path from 'path';
@@ -46,6 +47,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
+app.use(compression());
 app.use(
   OpenApiValidator.middleware({
     apiSpec,
