@@ -16,6 +16,10 @@ declare module 'duckdb' {
         callback: (err: unknown, result: any) => void
       ]
     ): void;
+    stream<T>(
+      query: string,
+      ...params: (string | number)[]
+    ): Generator<T, void, []>;
     close(): void;
   }
 }

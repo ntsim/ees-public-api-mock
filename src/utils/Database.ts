@@ -39,6 +39,17 @@ export default class Database {
     });
   }
 
+  /**
+   * Stream the results of a {@param query} using some{@param params}.
+   * Returns a generator.
+   */
+  stream<TResult>(
+    query: string,
+    params: any[] = []
+  ): Generator<TResult, void, []> {
+    return this.db.stream(query, ...params);
+  }
+
   close(): void {
     this.db.close();
   }

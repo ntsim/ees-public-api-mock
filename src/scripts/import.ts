@@ -56,6 +56,7 @@ async function runImport() {
 
     await extractData(db, dataFilePath);
     await extractMeta(db, metaFilePath);
+    await extractDataFacts(db);
 
     await db.run(`EXPORT DATABASE '${outputDir}' (FORMAT PARQUET, CODEC ZSTD)`);
 
@@ -95,9 +96,81 @@ async function extractMeta(db: Database, metaFilePath: string) {
     process.exit(1);
   }
 }
+
+async function extractDataFacts(db: Database) {
+  const filterCols = (
+    await db.all<{ group_name: string }>(
+      'SELECT DISTINCT group_name FROM filters;'
+    )
+  ).map((row) => row.group_name);
+  const indicatorRows = await db.all<{ name: string }>(
+    'SELECT DISTINCT name FROM indicators;'
+  );
+
+  const dataCols = keyBy(
+    await db.all<{ column_name: string; column_type: string }>(
+      `DESCRIBE data;`
+    ),
+    (col) => col.column_name
+  );
+
+  await db.run('CREATE SEQUENCE data_facts_seq START 1;');
+  await db.run(
+    `CREATE TABLE data_facts(
+      id BIGINT PRIMARY KEY DEFAULT nextval('data_facts_seq'),
+      time_period_id INT NOT NULL,
+      location_id INT NOT NULL,
+      ${[
+        ...filterCols.map((col) => `${col} INT NOT NULL`),
+        ...indicatorRows.map(
+          (row) => `${row.name} ${dataCols[row.name].column_type}`
+        ),
+      ]}
+    );`
+  );
+
+  const locationCols = (
+    await db.all<{ column_name: string }>(
+      `DESCRIBE SELECT * EXCLUDE id FROM locations;`
+    )
+  ).map((row) => row.column_name);
+
+  const insertCols = [
+    'time_period_id',
+    'location_id',
+    ...filterCols,
+    ...indicatorRows.map((row) => row.name),
+  ];
+
+  await db.run(
+    `INSERT INTO data_facts(${insertCols})
+     SELECT time_periods.id AS time_period_id,
+            locations.id AS location_id,
+            ${[
+              ...filterCols.map((col) => `${col}.id AS ${col}`),
+              ...indicatorRows.map((row) => row.name),
+            ]}
+     FROM data
+         JOIN locations 
+             ON row(${locationCols.map((col) => `locations.${col}`)})
+                    = row(${locationCols.map((col) => `data.${col}`)})
+         JOIN time_periods ON time_periods.year = data.time_period AND time_periods.identifier = data.time_identifier
+         ${filterCols
+           .map(
+             (col) =>
+               `JOIN filters AS ${col} ON ${col}.label = data.${col} AND ${col}.group_name = '${col}'`
+           )
+           .join(' ')};`
+  );
+
+  console.log('=> Imported data facts');
+}
+
 async function extractTimePeriods(db: Database): Promise<void> {
+  await db.run('CREATE SEQUENCE time_periods_seq START 1;');
   await db.run(
     `CREATE TABLE time_periods(
+        id INT PRIMARY KEY DEFAULT nextval('time_periods_seq'),
         year INT NOT NULL,
         identifier VARCHAR
      );`
