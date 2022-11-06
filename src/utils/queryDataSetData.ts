@@ -122,7 +122,7 @@ export default async function queryDataSetData(
         ),
         timePeriod: {
           code: parseTimePeriodCode(result.time_identifier),
-          year: result.time_period,
+          year: Number(result.time_period),
         },
         geographicLevel: csvLabelsToGeographicLevels[result.geographic_level],
         locationId: locationIdHasher.encodeHex(BigInt(result.location_id)),
