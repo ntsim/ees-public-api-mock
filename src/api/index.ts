@@ -16,6 +16,8 @@ import {
 import {
   absenceRatesByCharacteristicsDataSet,
   absenceRatesDataSet,
+  benchmarkDataSets,
+  benchmarkETDetailedReorderedDataSet,
   permanentExclusionsDataSet,
   permanentExclusionsDataSets,
   pupilAbsenceDataSets,
@@ -24,6 +26,7 @@ import {
   spcYearGroupGenderDataSet,
 } from '../mocks/dataSets';
 import {
+  benchmarkPublication,
   permanentExclusionsPublication,
   publications,
   pupilAbsencePublication,
@@ -93,6 +96,9 @@ app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
     case spcPublication.id:
       res.status(200).json(spcDataSets);
       break;
+    case benchmarkPublication.id:
+      res.status(200).json(benchmarkDataSets);
+      break;
     default:
       res.status(404).json(notFoundError());
   }
@@ -121,18 +127,11 @@ app.get('/api/v1/data-sets/:dataSetId/meta', async (req, res) => {
         })
       );
       break;
-    case spcEthnicityLanguageDataSet.id: {
-      const meta = await getDataSetMeta(spcEthnicityLanguageDataSet.id);
-
-      res.status(200).json(meta);
+    case spcEthnicityLanguageDataSet.id:
+    case spcYearGroupGenderDataSet.id:
+    case benchmarkETDetailedReorderedDataSet.id:
+      res.status(200).json(await getDataSetMeta(req.params.dataSetId));
       break;
-    }
-    case spcYearGroupGenderDataSet.id: {
-      const meta = await getDataSetMeta(spcYearGroupGenderDataSet.id);
-
-      res.status(200).json(meta);
-      break;
-    }
     default:
       res.status(404).json(notFoundError());
   }
@@ -154,14 +153,9 @@ app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
       handleMockDataSetQuery(req, res, permanentExclusionsDataSetData);
       break;
     case spcEthnicityLanguageDataSet.id:
-      await handleDatabaseDataSetQuery(
-        req,
-        res,
-        spcEthnicityLanguageDataSet.id
-      );
-      break;
     case spcYearGroupGenderDataSet.id:
-      await handleDatabaseDataSetQuery(req, res, spcYearGroupGenderDataSet.id);
+    case benchmarkETDetailedReorderedDataSet.id:
+      await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
       break;
     default:
       res.status(404).json(notFoundError());

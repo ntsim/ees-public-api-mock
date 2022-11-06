@@ -60,6 +60,17 @@ export const spcYearGroupGenderDataSet = createDataSet({
   },
 });
 
+export const benchmarkETDetailedReorderedDataSet = createDataSet({
+  id: '91f449b6-0850-45ff-8e09-23d5fdc87fb5',
+  content: '',
+  name: 'ET Detailed Reordered',
+  geographicLevels: ['National', 'Local Authority', 'Regional'],
+  timePeriods: {
+    start: '2015/16',
+    end: '2021/22',
+  },
+});
+
 export const pupilAbsenceDataSets = [
   absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
@@ -71,6 +82,8 @@ export const spcDataSets = [
   spcEthnicityLanguageDataSet,
   spcYearGroupGenderDataSet,
 ];
+
+export const benchmarkDataSets = [benchmarkETDetailedReorderedDataSet];
 
 function createDataSet(dataSet: Omit<DataSetViewModel, '_links'>) {
   return {
