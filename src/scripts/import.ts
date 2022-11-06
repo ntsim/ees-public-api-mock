@@ -70,7 +70,9 @@ runImport().then(() => {
 
 async function extractData(db: Database, csvPath: string) {
   try {
-    await db.run(`CREATE TABLE data AS SELECT * FROM '${csvPath}';`);
+    await db.run(
+      `CREATE TABLE data AS SELECT * FROM read_csv_auto('${csvPath}', ALL_VARCHAR=TRUE);`
+    );
 
     console.log('=> Imported data');
   } catch (err) {
@@ -107,13 +109,6 @@ async function extractDataFacts(db: Database) {
     'SELECT DISTINCT name FROM indicators;'
   );
 
-  const dataCols = keyBy(
-    await db.all<{ column_name: string; column_type: string }>(
-      `DESCRIBE data;`
-    ),
-    (col) => col.column_name
-  );
-
   await db.run('CREATE SEQUENCE data_facts_seq START 1;');
   await db.run(
     `CREATE TABLE data_facts(
@@ -122,9 +117,7 @@ async function extractDataFacts(db: Database) {
       location_id INT NOT NULL,
       ${[
         ...filterCols.map((col) => `${col} INT NOT NULL`),
-        ...indicatorRows.map(
-          (row) => `${row.name} ${dataCols[row.name].column_type}`
-        ),
+        ...indicatorRows.map((row) => `${row.name} VARCHAR`),
       ]}
     );`
   );
