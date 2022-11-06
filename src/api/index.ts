@@ -35,17 +35,9 @@ import filterDataSetResults from '../utils/filterDataSetResults';
 import getDataSetMeta from '../utils/getDataSetMeta';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
 import paginateResults from '../utils/paginateResults';
+import queryDataSetData from '../utils/queryDataSetData';
 
 const apiSpec = path.resolve(__dirname, '../openapi.yaml');
-
-const spcEthnicityLanguageDataSetDir = path.resolve(
-  __dirname,
-  '../data/spc_pupils_ethnicity_and_language'
-);
-const spcYearGroupGenderDataSetDir = path.resolve(
-  __dirname,
-  '../data/spc_pupils_fsm_ethnicity_yrgp'
-);
 
 const app = express();
 
@@ -144,20 +136,30 @@ app.get('/api/v1/data-sets/:dataSetId/meta', async (req, res) => {
   }
 });
 
-app.post('/api/v1/data-sets/:dataSetId/query', (req, res) => {
+app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
   switch (req.params.dataSetId) {
     case absenceRatesDataSet.id:
-      handleDataSetQuerySuccess(req, res, absenceRatesDataSetData);
+      handleMockDataSetQuery(req, res, absenceRatesDataSetData);
       break;
     case absenceRatesByCharacteristicsDataSet.id:
-      handleDataSetQuerySuccess(
+      handleMockDataSetQuery(
         req,
         res,
         absenceRatesByCharacteristicsDataSetData
       );
       break;
     case permanentExclusionsDataSet.id:
-      handleDataSetQuerySuccess(req, res, permanentExclusionsDataSetData);
+      handleMockDataSetQuery(req, res, permanentExclusionsDataSetData);
+      break;
+    case spcEthnicityLanguageDataSet.id:
+      await handleDatabaseDataSetQuery(
+        req,
+        res,
+        spcEthnicityLanguageDataSet.id
+      );
+      break;
+    case spcYearGroupGenderDataSet.id:
+      await handleDatabaseDataSetQuery(req, res, spcYearGroupGenderDataSet.id);
       break;
     default:
       res.status(404).json(notFoundError());
@@ -206,7 +208,7 @@ function notFoundError(): ApiErrorViewModel {
   };
 }
 
-function handleDataSetQuerySuccess(
+function handleMockDataSetQuery(
   req: Request,
   res: Response,
   results: DataSetResultsViewModel
@@ -226,4 +228,14 @@ function handleDataSetQuerySuccess(
 
   res.setHeader('Content-Type', 'text/csv');
   res.send(dataSetResultsToCsv(filteredResults));
+}
+
+async function handleDatabaseDataSetQuery(
+  req: Request,
+  res: Response,
+  dataSetId: string
+) {
+  const results = await queryDataSetData(dataSetId, req.body);
+
+  res.status(200).send(results);
 }

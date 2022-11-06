@@ -1,3 +1,4 @@
+import { invert } from 'lodash';
 import { GeographicLevel } from '../schema';
 
 export interface GeographicLevelCols {
@@ -64,3 +65,7 @@ export const geographicLevelCsvLabels: Record<GeographicLevel, string> = {
   Sponsor: 'Sponsor',
   Ward: 'Ward',
 };
+
+export const csvLabelsToGeographicLevels = invert(
+  geographicLevelCsvLabels
+) as Record<string, GeographicLevel>;

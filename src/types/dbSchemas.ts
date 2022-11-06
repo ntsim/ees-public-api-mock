@@ -1,5 +1,12 @@
 import { GeographicLevel } from '../schema';
 
+export interface DataRow {
+  time_period: number;
+  time_identifier: string;
+  geographic_level: string;
+  [column: string]: string | number;
+}
+
 export interface TimePeriod {
   year: number;
   identifier: string;
