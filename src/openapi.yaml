@@ -102,6 +102,7 @@ paths:
             type: string
             default: application/json
             enum:
+              - '*/*'
               - application/json
               - text/csv
       requestBody:
