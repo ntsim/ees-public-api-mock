@@ -92,7 +92,7 @@ export default async function queryDataSetData(
   ]);
 
   const indicatorsById = keyBy(indicators, (indicator) =>
-    indicatorIdHasher.encodeHex(BigInt(indicator.id))
+    indicatorIdHasher.encode(indicator.id)
   );
 
   return {
@@ -118,14 +118,14 @@ export default async function queryDataSetData(
     results: results.map((result) => {
       return {
         filterItemIds: filterCols.map((col) =>
-          filterIdHasher.encodeHex(BigInt(result[col]))
+          filterIdHasher.encode(Number(result[col]))
         ),
         timePeriod: {
           code: parseTimePeriodCode(result.time_identifier),
           year: Number(result.time_period),
         },
         geographicLevel: csvLabelsToGeographicLevels[result.geographic_level],
-        locationId: locationIdHasher.encodeHex(BigInt(result.location_id)),
+        locationId: locationIdHasher.encode(result.location_id),
         values: mapValues(indicatorsById, (indicator) =>
           result[indicator.name].toString()
         ),
@@ -218,7 +218,7 @@ async function getFilterItems(
 function parseIds(ids: string[], idHasher: Hashids) {
   return compact(ids).map((id) => {
     try {
-      return Number(idHasher.decodeHex(id)).toString();
+      return idHasher.decode(id).toString();
     } catch (err) {
       return id;
     }

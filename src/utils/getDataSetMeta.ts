@@ -103,7 +103,7 @@ async function getLocationsMeta(
     locationsMeta[geographicLevel] = levelLocations.map<LocationMetaViewModel>(
       (location) => {
         return {
-          id: hasher.encodeHex(BigInt(location.id)),
+          id: hasher.encode(location.id),
           code: location.code,
           label: location.label,
           level: geographicLevel,
@@ -145,7 +145,7 @@ async function getFiltersMeta(
       hint: group.hint,
       options: items.map((item) => {
         return {
-          id: hasher.encodeHex(BigInt(item.id)),
+          id: hasher.encode(item.id),
           label: item.label,
           isAggregate: item.is_aggregate || undefined,
         };
@@ -168,7 +168,7 @@ async function getIndicatorsMeta(
 
   return indicators.map((indicator) => {
     return {
-      id: hasher.encodeHex(BigInt(indicator.id)),
+      id: hasher.encode(indicator.id),
       label: indicator.label,
       name: indicator.name,
       unit: indicator.unit as Unit,
