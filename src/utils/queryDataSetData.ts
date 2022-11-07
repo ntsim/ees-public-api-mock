@@ -55,7 +55,7 @@ export default async function queryDataSetData(
   const dbQuery = `
       SELECT time_period,
              time_identifier,
-             geographic_level,
+             locations.geographic_level,
              locations.id AS location_id,
              ${[
                ...filterCols.map((col) => `${col}.id AS ${col}`),
@@ -71,10 +71,9 @@ export default async function queryDataSetData(
                 )}' AS ${col} ON ${col}.label = data.${col} AND ${col}.group_name = '${col}'`
             )
             .join(' ')}
-          JOIN '${tableFile(
-            dataSetDir,
-            'locations'
-          )}' AS locations USING (${locationCols})
+          JOIN '${tableFile(dataSetDir, 'locations')}' AS locations
+            ON row(${locationCols.map((col) => `locations.${col}`)})
+                = row(${locationCols.map((col) => `data.${col}`)})
       WHERE time_identifier = ?
           AND time_period >= ?
           AND time_period <= ? ${
