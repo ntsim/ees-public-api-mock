@@ -4,3 +4,4 @@ data-imports/
 build/
 src/schema/
 .vercel/
+.logs/
