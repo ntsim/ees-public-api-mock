@@ -1,5 +1,6 @@
-.idea
-node_modules
-data-imports
-src/schema
-.vercel
+.idea/
+node_modules/
+data-imports/
+build/
+src/schema/
+.vercel/
