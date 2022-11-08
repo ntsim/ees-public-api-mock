@@ -25,7 +25,8 @@ const indicatorIdHasher = createIndicatorIdHasher();
 
 export default async function queryDataSetData(
   dataSetId: string,
-  query: DataSetQuery
+  query: DataSetQuery,
+  useFacts: boolean
 ): Promise<DataSetResultsViewModel> {
   const dataSetDir = getDataSetDir(dataSetId);
 
@@ -52,36 +53,57 @@ export default async function queryDataSetData(
     return acc;
   }, new Set());
 
-  const dbQuery = `
-      SELECT time_period,
-             time_identifier,
-             locations.geographic_level,
-             locations.id AS location_id,
-             ${[
-               ...filterCols.map((col) => `${col}.id AS ${col}`),
-               ...indicatorCols,
-             ]}
-      FROM '${tableFile(dataSetDir, 'data')}' AS data
-          ${filterCols
-            .map(
-              (col) =>
-                `JOIN '${tableFile(
-                  dataSetDir,
-                  'filters'
-                )}' AS ${col} ON ${col}.label = data.${col} AND ${col}.group_name = '${col}'`
-            )
-            .join(' ')}
-          JOIN '${tableFile(dataSetDir, 'locations')}' AS locations
-            ON row(${locationCols.map((col) => `locations.${col}`)})
-                = row(${locationCols.map((col) => `data.${col}`)})
-      WHERE time_identifier = ?
+  let dbQuery: string;
+
+  if (useFacts) {
+    // Facts query generally outperforms non-fact query by 20-40% (with basic analysis)
+    dbQuery = `
+        SELECT time_periods.year AS time_period,
+               time_periods.identifier AS time_identifier,
+               locations.geographic_level,
+               locations.id AS location_id,
+               ${[
+                 ...filterCols.map((col) => `${col}.id AS ${col}`),
+                 ...indicatorCols,
+               ]}
+        FROM '${tableFile(dataSetDir, 'data_facts')}' AS data
+            ${getFilterJoins(dataSetDir, filterCols, 'id')}
+            JOIN '${tableFile(dataSetDir, 'locations')}' AS locations 
+                ON locations.id = data.location_id
+            JOIN '${tableFile(dataSetDir, 'time_periods')}' AS time_periods 
+                ON time_periods.id = data.time_period_id 
+        WHERE time_periods.identifier = ?
+            AND time_periods.year >= ?
+            AND time_periods.year <= ? ${
+              locationIds.length > 0
+                ? `AND locations.id IN (${placeholders(locationIds)})`
+                : ''
+            } ${getFiltersCondition(dataSetDir, filterItems, 'id')};
+    `;
+  } else {
+    dbQuery = `
+        SELECT time_period,
+               time_identifier,
+               locations.geographic_level,
+               locations.id AS location_id,
+               ${[
+                 ...filterCols.map((col) => `${col}.id AS ${col}`),
+                 ...indicatorCols,
+               ]}
+        FROM '${tableFile(dataSetDir, 'data')}' AS data
+            ${getFilterJoins(dataSetDir, filterCols, 'label')}
+            JOIN '${tableFile(dataSetDir, 'locations')}' AS locations
+        ON row (${locationCols.map((col) => `locations.${col}`)})
+            = row (${locationCols.map((col) => `data.${col}`)})
+        WHERE time_identifier = ?
           AND time_period >= ?
           AND time_period <= ? ${
             locationIds.length > 0
               ? `AND locations.id IN (${placeholders(locationIds)})`
               : ''
-          } ${getFiltersCondition(dataSetDir, filterItems)};
-  `;
+          } ${getFiltersCondition(dataSetDir, filterItems, 'label')};
+    `;
+  }
 
   const results = await db.all<Result>(dbQuery, [
     startCode,
@@ -133,9 +155,25 @@ export default async function queryDataSetData(
   };
 }
 
+function getFilterJoins(
+  dataSetDir: string,
+  filterCols: string[],
+  property: keyof Filter
+) {
+  const table = tableFile(dataSetDir, 'filters');
+  return filterCols
+    .map(
+      (filter) =>
+        `JOIN '${table}' AS ${filter} 
+          ON ${filter}.${property} = data.${filter} AND ${filter}.group_name = '${filter}'`
+    )
+    .join(' ');
+}
+
 function getFiltersCondition(
   dataSetDir: string,
-  filterItems: FilterItem[]
+  filterItems: FilterItem[],
+  property: keyof FilterItem
 ): string {
   if (!filterItems.length) {
     return '';
@@ -146,7 +184,9 @@ function getFiltersCondition(
   const condition = Object.entries(groupedFilters)
     .map(
       ([groupName, filterItems]) =>
-        `data.${groupName} IN (${filterItems.map((item) => `'${item.label}'`)})`
+        `data.${groupName} IN (${filterItems.map((item) =>
+          property === 'id' ? item.id : ` '${item[property]}'`
+        )})`
     )
     .join(' AND ');
 
@@ -230,7 +270,13 @@ function placeholders(value: unknown[]): string[] {
 
 function tableFile(
   dataSetDir: string,
-  table: 'data' | 'indicators' | 'filters' | 'time_periods' | 'locations'
+  table:
+    | 'data'
+    | 'data_facts'
+    | 'indicators'
+    | 'filters'
+    | 'time_periods'
+    | 'locations'
 ) {
   return `${dataSetDir}/${table}.parquet`;
 }
