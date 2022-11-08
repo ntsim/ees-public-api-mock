@@ -98,7 +98,10 @@ async function getLocationsMeta(
       id: number;
       code: string;
       label: string;
-    }>(`SELECT ${cols} FROM '${filePath}' WHERE geographic_level = ?`, [level]);
+    }>(
+      `SELECT ${cols} FROM '${filePath}' WHERE geographic_level = ? ORDER BY label ASC`,
+      [level]
+    );
 
     locationsMeta[geographicLevel] = levelLocations.map<LocationMetaViewModel>(
       (location) => {
@@ -135,7 +138,7 @@ async function getFiltersMeta(
 
   for (const group of groups) {
     const items = await db.all<Pick<Filter, 'id' | 'label' | 'is_aggregate'>>(
-      `SELECT id, label, is_aggregate FROM '${filePath}' WHERE group_label = ?`,
+      `SELECT id, label, is_aggregate FROM '${filePath}' WHERE group_label = ? ORDER BY label ASC`,
       [group.label]
     );
 
@@ -164,7 +167,9 @@ async function getIndicatorsMeta(
 
   const hasher = createIndicatorIdHasher();
 
-  const indicators = await db.all<Indicator>(`SELECT * FROM '${filePath}';`);
+  const indicators = await db.all<Indicator>(
+    `SELECT * FROM '${filePath}' ORDER BY label ASC;`
+  );
 
   return indicators.map((indicator) => {
     return {
