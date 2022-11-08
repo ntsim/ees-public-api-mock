@@ -16,6 +16,7 @@ import {
 import {
   absenceRatesByCharacteristicsDataSet,
   absenceRatesDataSet,
+  allDataSets,
   benchmarkDataSets,
   permanentExclusionsDataSet,
   permanentExclusionsDataSets,
@@ -154,8 +155,7 @@ app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
       break;
     default: {
       if (dataSetDirs[req.params.dataSetId]) {
-        await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
-        return;
+        return await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
       }
 
       res.status(404).json(notFoundError());
@@ -164,17 +164,13 @@ app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
 });
 
 app.get('/api/v1/data-sets/:dataSetId/file', (req, res) => {
-  switch (req.params.dataSetId) {
-    case absenceRatesDataSet.id:
-    case absenceRatesByCharacteristicsDataSet.id:
-    case permanentExclusionsDataSet.id:
-      res
-        .status(200)
-        .sendFile(path.resolve(__dirname, '../mocks/dataSetFile.zip'));
-      break;
-    default:
-      res.status(404).json(notFoundError());
+  if (allDataSets.some((dataSet) => dataSet.id === req.params.dataSetId)) {
+    return res
+      .status(200)
+      .sendFile(path.resolve(__dirname, '../mocks/dataSetFile.zip'));
   }
+
+  res.status(404).json(notFoundError());
 });
 
 // Error handling

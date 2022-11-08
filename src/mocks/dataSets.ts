@@ -104,23 +104,32 @@ export const benchmarkLtdDmDataSet = createDataSet({
   },
 });
 
-export const pupilAbsenceDataSets = [
+export const pupilAbsenceDataSets: DataSetViewModel[] = [
   absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
 ];
 
-export const permanentExclusionsDataSets = [permanentExclusionsDataSet];
+export const permanentExclusionsDataSets: DataSetViewModel[] = [
+  permanentExclusionsDataSet,
+];
 
-export const spcDataSets = [
+export const spcDataSets: DataSetViewModel[] = [
   spcEthnicityLanguageDataSet,
   spcYearGroupGenderDataSet,
 ];
 
-export const benchmarkDataSets = [
+export const benchmarkDataSets: DataSetViewModel[] = [
   benchmarkETDetailedReorderedDataSet,
   benchmarkLtdDmDataSet,
   benchmarkNatDataSet,
   benchmarkQuaDataSet,
+];
+
+export const allDataSets: DataSetViewModel[] = [
+  ...pupilAbsenceDataSets,
+  ...permanentExclusionsDataSets,
+  ...spcDataSets,
+  ...benchmarkDataSets,
 ];
 
 function createDataSet(dataSet: Omit<DataSetViewModel, '_links'>) {
