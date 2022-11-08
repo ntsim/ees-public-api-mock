@@ -53,6 +53,11 @@ export default async function queryDataSetData(
     return acc;
   }, new Set());
 
+  const groupedFilterItems = groupBy(
+    filterItems,
+    (filter) => filter.group_name
+  );
+
   let dbQuery: string;
 
   if (useFacts) {
@@ -78,7 +83,7 @@ export default async function queryDataSetData(
               locationIds.length > 0
                 ? `AND locations.id IN (${placeholders(locationIds)})`
                 : ''
-            } ${getFiltersCondition(dataSetDir, filterItems, 'id')};
+            } ${getFiltersCondition(dataSetDir, groupedFilterItems)};
     `;
   } else {
     dbQuery = `
@@ -101,7 +106,7 @@ export default async function queryDataSetData(
             locationIds.length > 0
               ? `AND locations.id IN (${placeholders(locationIds)})`
               : ''
-          } ${getFiltersCondition(dataSetDir, filterItems, 'label')};
+          } ${getFiltersCondition(dataSetDir, groupedFilterItems)};
     `;
   }
 
@@ -110,6 +115,9 @@ export default async function queryDataSetData(
     timePeriod.startYear,
     timePeriod.endYear,
     ...locationIds,
+    ...Object.values(groupedFilterItems).flatMap((items) =>
+      items.map((item) => (useFacts ? item.id : item.label))
+    ),
   ]);
 
   const unquotedFilterCols = filterCols.map((col) => col.slice(1, -1));
@@ -177,21 +185,16 @@ function getFilterJoins(
 
 function getFiltersCondition(
   dataSetDir: string,
-  filterItems: FilterItem[],
-  property: keyof FilterItem
+  groupedFilterItems: Dictionary<FilterItem[]>
 ): string {
-  if (!filterItems.length) {
+  if (!Object.keys(groupedFilterItems).length) {
     return '';
   }
 
-  const groupedFilters = groupBy(filterItems, (filter) => filter.group_name);
-
-  const condition = Object.entries(groupedFilters)
+  const condition = Object.entries(groupedFilterItems)
     .map(
       ([groupName, filterItems]) =>
-        `data."${groupName}" IN (${filterItems.map((item) =>
-          property === 'id' ? item.id : ` '${item[property]}'`
-        )})`
+        `data."${groupName}" IN (${placeholders(filterItems)})`
     )
     .join(' AND ');
 
