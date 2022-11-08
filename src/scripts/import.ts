@@ -115,10 +115,11 @@ async function extractDataFacts(db: Database) {
     await db.all<{ group_name: string }>(
       'SELECT DISTINCT group_name FROM filters;'
     )
-  ).map((row) => row.group_name);
-  const indicatorRows = await db.all<{ name: string }>(
-    'SELECT DISTINCT name FROM indicators;'
-  );
+  ).map((row) => `"${row.group_name}"`);
+
+  const indicatorCols = (
+    await db.all<{ name: string }>('SELECT DISTINCT name FROM indicators;')
+  ).map((row) => `"${row.name}"`);
 
   await db.run(
     `CREATE TABLE data_facts(
@@ -126,7 +127,7 @@ async function extractDataFacts(db: Database) {
       location_id UINTEGER NOT NULL,
       ${[
         ...filterCols.map((col) => `${col} UINTEGER NOT NULL`),
-        ...indicatorRows.map((row) => `${row.name} VARCHAR`),
+        ...indicatorCols.map((col) => `${col} VARCHAR`),
       ]}
     );`
   );
@@ -141,7 +142,7 @@ async function extractDataFacts(db: Database) {
     'time_period_id',
     'location_id',
     ...filterCols,
-    ...indicatorRows.map((row) => row.name),
+    ...indicatorCols,
   ];
 
   await db.run(
@@ -150,7 +151,7 @@ async function extractDataFacts(db: Database) {
             locations.id AS location_id,
             ${[
               ...filterCols.map((col) => `${col}.id AS ${col}`),
-              ...indicatorRows.map((row) => row.name),
+              ...indicatorCols,
             ]}
      FROM data
          JOIN locations 
@@ -160,7 +161,8 @@ async function extractDataFacts(db: Database) {
          ${filterCols
            .map(
              (col) =>
-               `JOIN filters AS ${col} ON ${col}.label = data.${col} AND ${col}.group_name = '${col}'`
+               `JOIN filters AS ${col} ON ${col}.label = data.${col} 
+                  AND ${col}.group_name = '${col.slice(1, -1)}'`
            )
            .join(' ')};`
   );

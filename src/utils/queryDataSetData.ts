@@ -49,7 +49,7 @@ export default async function queryDataSetData(
   );
 
   const indicatorCols = indicators.reduce<Set<string>>((acc, indicator) => {
-    acc.add(indicator.name);
+    acc.add(`"${indicator.name}"`);
     return acc;
   }, new Set());
 
@@ -112,6 +112,7 @@ export default async function queryDataSetData(
     ...locationIds,
   ]);
 
+  const unquotedFilterCols = filterCols.map((col) => col.slice(1, -1));
   const indicatorsById = keyBy(indicators, (indicator) =>
     indicatorIdHasher.encode(indicator.id)
   );
@@ -138,7 +139,7 @@ export default async function queryDataSetData(
         : undefined,
     results: results.map((result) => {
       return {
-        filterItemIds: filterCols.map((col) =>
+        filterItemIds: unquotedFilterCols.map((col) =>
           filterIdHasher.encode(Number(result[col]))
         ),
         timePeriod: {
@@ -164,8 +165,8 @@ function getFilterJoins(
   return filterCols
     .map(
       (filter) =>
-        `JOIN '${table}' AS ${filter} 
-          ON ${filter}.${property} = data.${filter} AND ${filter}.group_name = '${filter}'`
+        `JOIN '${table}' AS ${filter} ON ${filter}.${property} = data.${filter} 
+          AND ${filter}.group_name = '${filter.slice(1, -1)}'`
     )
     .join(' ');
 }
@@ -184,7 +185,7 @@ function getFiltersCondition(
   const condition = Object.entries(groupedFilters)
     .map(
       ([groupName, filterItems]) =>
-        `data.${groupName} IN (${filterItems.map((item) =>
+        `data."${groupName}" IN (${filterItems.map((item) =>
           property === 'id' ? item.id : ` '${item[property]}'`
         )})`
     )
@@ -216,7 +217,7 @@ async function getFilterColumns(
         SELECT DISTINCT group_name
         FROM '${tableFile(dataSetDir, 'filters')}';
     `)
-  ).map((row) => row.group_name);
+  ).map((row) => `"${row.group_name}"`);
 }
 
 async function getIndicators(
