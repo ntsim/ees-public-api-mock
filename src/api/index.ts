@@ -17,13 +17,10 @@ import {
   absenceRatesByCharacteristicsDataSet,
   absenceRatesDataSet,
   benchmarkDataSets,
-  benchmarkETDetailedReorderedDataSet,
   permanentExclusionsDataSet,
   permanentExclusionsDataSets,
   pupilAbsenceDataSets,
   spcDataSets,
-  spcEthnicityLanguageDataSet,
-  spcYearGroupGenderDataSet,
 } from '../mocks/dataSets';
 import {
   benchmarkPublication,
@@ -36,6 +33,7 @@ import { ApiErrorViewModel, DataSetResultsViewModel } from '../schema';
 import dataSetResultsToCsv from '../utils/dataSetResultsToCsv';
 import filterDataSetMeta from '../utils/filterDataSetMeta';
 import filterDataSetResults from '../utils/filterDataSetResults';
+import { dataSetDirs } from '../utils/getDataSetDir';
 import getDataSetMeta from '../utils/getDataSetMeta';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
 import paginateResults from '../utils/paginateResults';
@@ -127,13 +125,15 @@ app.get('/api/v1/data-sets/:dataSetId/meta', async (req, res) => {
         })
       );
       break;
-    case spcEthnicityLanguageDataSet.id:
-    case spcYearGroupGenderDataSet.id:
-    case benchmarkETDetailedReorderedDataSet.id:
-      res.status(200).json(await getDataSetMeta(req.params.dataSetId));
-      break;
-    default:
+    default: {
+      if (dataSetDirs[req.params.dataSetId]) {
+        res.status(200).json(await getDataSetMeta(req.params.dataSetId));
+        return;
+      }
+
       res.status(404).json(notFoundError());
+      return;
+    }
   }
 });
 
@@ -152,13 +152,14 @@ app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
     case permanentExclusionsDataSet.id:
       handleMockDataSetQuery(req, res, permanentExclusionsDataSetData);
       break;
-    case spcEthnicityLanguageDataSet.id:
-    case spcYearGroupGenderDataSet.id:
-    case benchmarkETDetailedReorderedDataSet.id:
-      await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
-      break;
-    default:
+    default: {
+      if (dataSetDirs[req.params.dataSetId]) {
+        await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
+        return;
+      }
+
       res.status(404).json(notFoundError());
+    }
   }
 });
 

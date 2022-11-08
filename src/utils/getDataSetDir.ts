@@ -1,11 +1,14 @@
 import path from 'path';
 import {
   benchmarkETDetailedReorderedDataSet,
+  benchmarkLtdDmDataSet,
+  benchmarkNatDataSet,
+  benchmarkQuaDataSet,
   spcEthnicityLanguageDataSet,
   spcYearGroupGenderDataSet,
 } from '../mocks/dataSets';
 
-const dataSetDirs = {
+export const dataSetDirs = {
   [spcEthnicityLanguageDataSet.id]: path.resolve(
     __dirname,
     '../data/spc_pupils_ethnicity_and_language'
@@ -17,6 +20,12 @@ const dataSetDirs = {
   [benchmarkETDetailedReorderedDataSet.id]: path.resolve(
     __dirname,
     '../data/e-and-t-geography-detailed_6years_reordered'
+  ),
+  [benchmarkQuaDataSet.id]: path.resolve(__dirname, '../data/qua01'),
+  [benchmarkNatDataSet.id]: path.resolve(__dirname, '../data/nat01'),
+  [benchmarkLtdDmDataSet.id]: path.resolve(
+    __dirname,
+    '../data/ltd_dm_201415_inst'
   ),
 };
 

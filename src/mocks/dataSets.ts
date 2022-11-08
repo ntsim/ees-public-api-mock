@@ -71,6 +71,39 @@ export const benchmarkETDetailedReorderedDataSet = createDataSet({
   },
 });
 
+export const benchmarkQuaDataSet = createDataSet({
+  id: 'a96044e5-2310-4890-a601-8ca0b67d2964',
+  content: '',
+  name: 'QUA01',
+  geographicLevels: ['National'],
+  timePeriods: {
+    start: '2013/14',
+    end: '2018/19',
+  },
+});
+
+export const benchmarkNatDataSet = createDataSet({
+  id: '942ea929-05da-4e52-b77c-6cead4afb2f0',
+  content: '',
+  name: 'NAT01',
+  geographicLevels: ['National'],
+  timePeriods: {
+    start: '2013/14',
+    end: '2018/19',
+  },
+});
+
+export const benchmarkLtdDmDataSet = createDataSet({
+  id: '60849ca0-055d-4144-9ec5-30c100ad2245',
+  content: '',
+  name: 'LTD DM',
+  geographicLevels: ['School'],
+  timePeriods: {
+    start: '2014/15',
+    end: '2015/15',
+  },
+});
+
 export const pupilAbsenceDataSets = [
   absenceRatesDataSet,
   absenceRatesByCharacteristicsDataSet,
@@ -83,7 +116,12 @@ export const spcDataSets = [
   spcYearGroupGenderDataSet,
 ];
 
-export const benchmarkDataSets = [benchmarkETDetailedReorderedDataSet];
+export const benchmarkDataSets = [
+  benchmarkETDetailedReorderedDataSet,
+  benchmarkLtdDmDataSet,
+  benchmarkNatDataSet,
+  benchmarkQuaDataSet,
+];
 
 function createDataSet(dataSet: Omit<DataSetViewModel, '_links'>) {
   return {
