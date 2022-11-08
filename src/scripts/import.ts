@@ -120,14 +120,12 @@ async function extractDataFacts(db: Database) {
     'SELECT DISTINCT name FROM indicators;'
   );
 
-  await db.run('CREATE SEQUENCE data_facts_seq START 1;');
   await db.run(
     `CREATE TABLE data_facts(
-      id BIGINT PRIMARY KEY DEFAULT nextval('data_facts_seq'),
-      time_period_id INT NOT NULL,
-      location_id INT NOT NULL,
+      time_period_id UINTEGER NOT NULL,
+      location_id UINTEGER NOT NULL,
       ${[
-        ...filterCols.map((col) => `${col} INT NOT NULL`),
+        ...filterCols.map((col) => `${col} UINTEGER NOT NULL`),
         ...indicatorRows.map((row) => `${row.name} VARCHAR`),
       ]}
     );`
@@ -177,8 +175,8 @@ async function extractTimePeriods(db: Database): Promise<void> {
   await db.run('CREATE SEQUENCE time_periods_seq START 1;');
   await db.run(
     `CREATE TABLE time_periods(
-        id INT PRIMARY KEY DEFAULT nextval('time_periods_seq'),
-        year INT NOT NULL,
+        id UINTEGER PRIMARY KEY DEFAULT nextval('time_periods_seq'),
+        year UINTEGER NOT NULL,
         identifier VARCHAR
      );`
   );
@@ -219,7 +217,7 @@ async function extractLocations(
   await db.run('CREATE SEQUENCE locations_seq START 1;');
   await db.run(
     `CREATE TABLE locations(
-       id INT PRIMARY KEY DEFAULT nextval('locations_seq'),
+       id UINTEGER PRIMARY KEY DEFAULT nextval('locations_seq'),
        ${locationCols.map((col) => `${col} VARCHAR`)}
      );`
   );
@@ -241,7 +239,7 @@ async function extractFilters(
   await db.run('CREATE SEQUENCE filters_seq START 1;');
   await db.run(
     `CREATE TABLE filters(
-       id INT PRIMARY KEY DEFAULT nextval('filters_seq'),
+       id UINTEGER PRIMARY KEY DEFAULT nextval('filters_seq'),
        label VARCHAR NOT NULL,
        group_label VARCHAR NOT NULL,
        group_name VARCHAR NOT NULL,
@@ -276,7 +274,7 @@ async function extractIndicators(
   await db.run('CREATE SEQUENCE indicators_seq START 1;');
   await db.run(
     `CREATE TABLE indicators(
-       id INT PRIMARY KEY DEFAULT nextval('indicators_seq'),
+       id UINTEGER PRIMARY KEY DEFAULT nextval('indicators_seq'),
        label VARCHAR NOT NULL,
        name VARCHAR NOT NULL,
        decimal_places INT,
