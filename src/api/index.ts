@@ -231,11 +231,10 @@ async function handleDatabaseDataSetQuery(
   res: Response,
   dataSetId: string
 ) {
-  const results = await queryDataSetData(
-    dataSetId,
-    req.body,
-    typeof req.query.useFacts !== 'undefined'
-  );
+  const results = await queryDataSetData(dataSetId, req.body, {
+    useFacts: typeof req.query.useFacts !== 'undefined',
+    debug: typeof req.query.debug !== 'undefined',
+  });
 
   res.status(200).send(results);
 }

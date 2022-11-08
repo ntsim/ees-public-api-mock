@@ -26,7 +26,7 @@ const indicatorIdHasher = createIndicatorIdHasher();
 export default async function queryDataSetData(
   dataSetId: string,
   query: DataSetQuery,
-  useFacts: boolean
+  { useFacts, debug }: { useFacts: boolean; debug: boolean }
 ): Promise<DataSetResultsViewModel> {
   const dataSetDir = getDataSetDir(dataSetId);
 
@@ -114,7 +114,7 @@ export default async function queryDataSetData(
 
   const unquotedFilterCols = filterCols.map((col) => col.slice(1, -1));
   const indicatorsById = keyBy(indicators, (indicator) =>
-    indicatorIdHasher.encode(indicator.id)
+    debug ? indicator.name.toString() : indicatorIdHasher.encode(indicator.id)
   );
 
   return {
@@ -140,14 +140,18 @@ export default async function queryDataSetData(
     results: results.map((result) => {
       return {
         filterItemIds: unquotedFilterCols.map((col) =>
-          filterIdHasher.encode(Number(result[col]))
+          debug
+            ? `${col}:${result[col]}`
+            : filterIdHasher.encode(Number(result[col]))
         ),
         timePeriod: {
           code: parseTimePeriodCode(result.time_identifier),
           year: Number(result.time_period),
         },
         geographicLevel: csvLabelsToGeographicLevels[result.geographic_level],
-        locationId: locationIdHasher.encode(result.location_id),
+        locationId: debug
+          ? result.location_id.toString()
+          : locationIdHasher.encode(result.location_id),
         values: mapValues(indicatorsById, (indicator) =>
           result[indicator.name].toString()
         ),
