@@ -19,10 +19,6 @@ interface Result extends DataRow {
   location_id: number;
 }
 
-const filterIdHasher = createFilterIdHasher();
-const locationIdHasher = createLocationIdHasher();
-const indicatorIdHasher = createIndicatorIdHasher();
-
 export default async function queryDataSetData(
   dataSetId: string,
   query: DataSetQuery,
@@ -31,6 +27,10 @@ export default async function queryDataSetData(
   const dataSetDir = getDataSetDir(dataSetId);
 
   const db = new Database();
+
+  const filterIdHasher = createFilterIdHasher();
+  const locationIdHasher = createLocationIdHasher();
+  const indicatorIdHasher = createIndicatorIdHasher();
 
   const { timePeriod } = query;
   const locationIds = parseIds(query.locations, locationIdHasher);
@@ -230,7 +230,7 @@ async function getFilterColumns(
 async function getIndicators(
   db: Database,
   dataSetDir: string,
-  indicatorIds: string[]
+  indicatorIds: number[]
 ): Promise<Indicator[]> {
   if (!indicatorIds.length) {
     return [];
@@ -247,7 +247,7 @@ async function getIndicators(
 async function getFilterItems(
   db: Database,
   dataSetDir: string,
-  filterItemIds: string[]
+  filterItemIds: number[]
 ): Promise<FilterItem[]> {
   if (!filterItemIds.length) {
     return [];
@@ -262,14 +262,16 @@ async function getFilterItems(
   );
 }
 
-function parseIds(ids: string[], idHasher: Hashids) {
-  return compact(ids).map((id) => {
-    try {
-      return idHasher.decode(id).toString();
-    } catch (err) {
-      return id;
-    }
-  });
+function parseIds(ids: string[], idHasher: Hashids): number[] {
+  return compact(
+    ids.map((id) => {
+      try {
+        return idHasher.decode(id)[0] as number;
+      } catch (err) {
+        return Number.NaN;
+      }
+    })
+  );
 }
 
 function placeholders(value: unknown[]): string[] {
