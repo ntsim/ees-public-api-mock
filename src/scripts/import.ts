@@ -59,7 +59,6 @@ async function runImport() {
 
     await extractData(db, dataFilePath);
     await extractMeta(db, metaFilePath);
-    await extractDataFacts(db);
 
     await db.run(`EXPORT DATABASE '${outputDir}' (FORMAT PARQUET, CODEC ZSTD)`);
 
@@ -105,69 +104,6 @@ async function extractMeta(db: Database, metaFilePath: string) {
     console.error(err);
     process.exit(1);
   }
-}
-
-async function extractDataFacts(db: Database) {
-  const timeLabel = '=> Imported data facts';
-  console.time(timeLabel);
-
-  const filterCols = (
-    await db.all<{ group_name: string }>(
-      'SELECT DISTINCT group_name FROM filters;'
-    )
-  ).map((row) => `"${row.group_name}"`);
-
-  const indicatorCols = (
-    await db.all<{ name: string }>('SELECT DISTINCT name FROM indicators;')
-  ).map((row) => `"${row.name}"`);
-
-  await db.run(
-    `CREATE TABLE data_facts(
-      time_period_id UINTEGER NOT NULL,
-      location_id UINTEGER NOT NULL,
-      ${[
-        ...filterCols.map((col) => `${col} UINTEGER NOT NULL`),
-        ...indicatorCols.map((col) => `${col} VARCHAR`),
-      ]}
-    );`
-  );
-
-  const locationCols = (
-    await db.all<{ column_name: string }>(
-      `DESCRIBE SELECT * EXCLUDE id FROM locations;`
-    )
-  ).map((row) => row.column_name);
-
-  const insertCols = [
-    'time_period_id',
-    'location_id',
-    ...filterCols,
-    ...indicatorCols,
-  ];
-
-  await db.run(
-    `INSERT INTO data_facts(${insertCols})
-     SELECT time_periods.id AS time_period_id,
-            locations.id AS location_id,
-            ${[
-              ...filterCols.map((col) => `${col}.id AS ${col}`),
-              ...indicatorCols,
-            ]}
-     FROM data
-         JOIN locations 
-             ON row(${locationCols.map((col) => `locations.${col}`)})
-                    = row(${locationCols.map((col) => `data.${col}`)})
-         JOIN time_periods ON time_periods.year = data.time_period AND time_periods.identifier = data.time_identifier
-         ${filterCols
-           .map(
-             (col) =>
-               `JOIN filters AS ${col} ON ${col}.label = data.${col} 
-                  AND ${col}.group_name = '${col.slice(1, -1)}'`
-           )
-           .join(' ')};`
-  );
-
-  console.timeEnd(timeLabel);
 }
 
 async function extractTimePeriods(db: Database): Promise<void> {

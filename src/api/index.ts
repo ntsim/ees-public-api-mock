@@ -229,7 +229,6 @@ async function handleDatabaseDataSetQuery(
   dataSetId: string
 ) {
   const results = await queryDataSetData(dataSetId, req.body, {
-    useFacts: typeof req.query.useFacts !== 'undefined',
     debug: typeof req.query.debug !== 'undefined',
   });
 
