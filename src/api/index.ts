@@ -24,7 +24,6 @@ import {
   spcDataSets,
 } from '../mocks/dataSets';
 import {
-  benchmarkPublication,
   permanentExclusionsPublication,
   publications,
   pupilAbsencePublication,
@@ -94,9 +93,6 @@ app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
       break;
     case spcPublication.id:
       res.status(200).json(spcDataSets);
-      break;
-    case benchmarkPublication.id:
-      res.status(200).json(benchmarkDataSets);
       break;
     default:
       res.status(404).json(notFoundError());

@@ -16,16 +16,10 @@ export const spcPublication = createPublication({
   title: 'Schools, pupils and their characteristics',
 });
 
-export const benchmarkPublication = createPublication({
-  id: '5b01034f-beec-454e-a6bf-fb17148c03da',
-  title: 'Benchmark',
-});
-
 export const publications: PublicationSummaryViewModel[] = [
   pupilAbsencePublication,
   permanentExclusionsPublication,
   spcPublication,
-  benchmarkPublication,
 ];
 
 function createPublication(
