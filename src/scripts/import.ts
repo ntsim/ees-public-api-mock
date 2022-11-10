@@ -1,8 +1,12 @@
 import fs from 'fs-extra';
-import { partition } from 'lodash';
+import { orderBy, partition } from 'lodash';
 import path from 'path';
 import { MetaFileRow } from '../types/metaFile';
-import { geographicLevelColumns } from '../utils/locationConstants';
+import {
+  baseGeographicLevelOrder,
+  columnsToGeographicLevel,
+  geographicLevelColumns,
+} from '../utils/locationConstants';
 import Database from '../utils/Database';
 import parseCsv from '../utils/parseCsv';
 
@@ -119,13 +123,14 @@ async function extractTimePeriods(db: Database): Promise<void> {
      );`
   );
 
+  // TODO - implement better ordering for time periods
   await db.run(
     `INSERT INTO time_periods(year, identifier) 
       SELECT DISTINCT
         time_period AS year, 
         time_identifier AS identifier
       FROM data
-      ORDER BY time_period ASC;`
+      ORDER BY time_period, time_identifier ASC;`
   );
 
   console.timeEnd(timeLabel);
@@ -138,29 +143,45 @@ async function extractLocations(
   const timeLabel = '=> Imported locations meta';
   console.time(timeLabel);
 
-  const allowedCols = Object.values(geographicLevelColumns).reduce(
-    (acc, cols) => {
-      [cols.code, cols.name, ...(cols.other ?? [])].forEach((col) =>
-        acc.add(col)
-      );
-      return acc;
-    },
-    new Set()
+  const locationCols = columns.filter(
+    (column) => columnsToGeographicLevel[column]
   );
-  const locationCols = [
-    'geographic_level',
-    ...columns.filter((column) => allowedCols.has(column)),
-  ];
 
   await db.run('CREATE SEQUENCE locations_seq START 1;');
   await db.run(
     `CREATE TABLE locations(
        id UINTEGER PRIMARY KEY DEFAULT nextval('locations_seq'),
+       geographic_level VARCHAR NOT NULL,
        ${locationCols.map((col) => `${col} VARCHAR`)}
      );`
   );
+
+  // Have to determine an order so that we can get a relatively stable
+  // ordering of locations (instead of the order they appear in the CSV).
+  const locationColsOrder = orderBy(locationCols, (col) => {
+    const geographicLevel = columnsToGeographicLevel[col];
+
+    const index = baseGeographicLevelOrder.indexOf(geographicLevel);
+    const baseModifier = index > -1 ? index.toString() : '';
+
+    const levelCols = geographicLevelColumns[geographicLevel];
+
+    if (levelCols.code === col) {
+      return `${baseModifier}:1`;
+    }
+
+    if (levelCols.name === col) {
+      return `${baseModifier}:2`;
+    }
+
+    return `${baseModifier}:3`;
+  });
+
   await db.run(
-    `INSERT INTO locations(${locationCols}) SELECT DISTINCT ${locationCols} FROM data;`
+    `INSERT INTO locations(geographic_level, ${locationCols})
+        SELECT DISTINCT geographic_level, ${locationCols}
+        FROM data
+        ORDER BY geographic_level, ${locationColsOrder};`
   );
 
   console.timeEnd('=> Imported locations meta');
@@ -186,14 +207,20 @@ async function extractFilters(
      );`
   );
 
-  const filters = metaFileRows.filter((row) => row.col_type === 'Filter');
+  const filters = orderBy(
+    metaFileRows.filter((row) => row.col_type === 'Filter'),
+    (row) => row.col_name
+  );
 
   for (const filter of filters) {
     await db.run(
       `INSERT INTO
         filters(label, group_label, group_name, group_hint, is_aggregate)
         SELECT label, $1, $2, $3, CASE WHEN label = 'Total' THEN TRUE END
-            FROM (SELECT DISTINCT ${filter.col_name} AS label FROM data);`,
+        FROM (
+            SELECT DISTINCT ${filter.col_name} AS label
+            FROM data ORDER BY ${filter.col_name}
+        );`,
       [filter.label, filter.col_name, filter.filter_hint]
     );
   }
@@ -220,7 +247,10 @@ async function extractIndicators(
      );`
   );
 
-  const indicators = metaFileRows.filter((row) => row.col_type === 'Indicator');
+  const indicators = orderBy(
+    metaFileRows.filter((row) => row.col_type === 'Indicator'),
+    (row) => row.label
+  );
 
   for (const indicator of indicators) {
     await db.run(

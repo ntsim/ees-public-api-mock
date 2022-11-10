@@ -46,6 +46,25 @@ export const geographicLevelColumns: Record<
   Ward: { code: 'ward_code', name: 'ward_name' },
 };
 
+export const columnsToGeographicLevel: Dictionary<GeographicLevel> =
+  Object.entries(geographicLevelColumns).reduce<Dictionary<GeographicLevel>>(
+    (acc, [geographicLevel, cols]) => {
+      [cols.code, cols.name, ...(cols.other ?? [])].forEach((col) => {
+        acc[col] = geographicLevel as GeographicLevel;
+      });
+
+      return acc;
+    },
+    {}
+  );
+
+export const baseGeographicLevelOrder: GeographicLevel[] = [
+  'Country',
+  'Region',
+  'LocalAuthority',
+  'LocalAuthorityDistrict',
+];
+
 export const geographicLevelCsvLabels: Record<GeographicLevel, string> = {
   Country: 'National',
   EnglishDevolvedArea: 'English devolved area',
