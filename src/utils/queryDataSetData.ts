@@ -64,7 +64,12 @@ export default async function queryDataSetData(
            locations.geographic_level,
            locations.id AS location_id,
            ${[
-             ...filterCols.map((col) => `${col}.id AS ${col}`),
+             ...filterCols.map(
+               (col) =>
+                 `${
+                   debug ? `concat(${col}.id, '::', ${col}.label)` : `${col}.id`
+                 } AS ${col}`
+             ),
              ...indicatorCols,
            ]}
     FROM '${tableFile(dataSetDir, 'data')}' AS data
