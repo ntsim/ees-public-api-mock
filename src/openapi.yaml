@@ -353,7 +353,7 @@ components:
           type: array
           description: The results of the data set query.
           items:
-            $ref: '#/components/schemas/ObservationViewModel'
+            $ref: '#/components/schemas/DataSetRowViewModel'
         warnings:
           type: array
           description: |
@@ -363,6 +363,42 @@ components:
             description: The warning message.
         _links:
           $ref: '#/components/schemas/LinksViewModel'
+      additionalProperties: false
+    DataSetRowViewModel:
+      type: object
+      description: A row of data point measurements matching a set of facets (filters, indicators, locations, time periods).
+      required:
+        - filters
+        - geographicLevel
+        - locationId
+        - values
+        - timePeriod
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the observation.
+        filters:
+          type: object
+          description: | 
+            A dictionary containing the row's associated filters. The key is the filter name and the value is ID of the filter item.
+          items:
+            type: string
+            format: uuid
+        geographicLevel:
+          $ref: '#/components/schemas/GeographicLevel'
+        locationId:
+          type: string
+          format: uuid
+          description: The ID of the location associated to this observation.
+        values:
+          type: object
+          description: |
+            A dictionary containing the row's data values. The key is the indicator name and the value is the measured indicator value.
+          additionalProperties:
+            type: string
+        timePeriod:
+          $ref: '#/components/schemas/TimePeriodViewModel'
       additionalProperties: false
     DataSetMetaViewModel:
       type: object
@@ -576,41 +612,6 @@ components:
             
             - ONS codes for higher geographic levels (countries, local authorities, etc)
             - DfE codes for lower geographic levels (schools, providers, etc)
-      additionalProperties: false
-    ObservationViewModel:
-      type: object
-      description: A group of data point measurements matching a set of facets (filters, indicators, locations, time periods).
-      required:
-        - filterItemIds
-        - geographicLevel
-        - locationId
-        - values
-        - timePeriod
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The ID of the observation.
-        filterItemIds:
-          type: array
-          items:
-            type: string
-            format: uuid
-            description: The IDs of the filter items associated to this observation.
-        geographicLevel:
-          $ref: '#/components/schemas/GeographicLevel'
-        locationId:
-          type: string
-          format: uuid
-          description: The ID of the location associated to this observation.
-        values:
-          type: object
-          description: |
-            A dictionary containing the data values for each indicator associated to this observation. The key is the ID of the indicator and the value is its measured value.
-          additionalProperties:
-            type: string
-        timePeriod:
-          $ref: '#/components/schemas/TimePeriodViewModel'
       additionalProperties: false
     PagedPublicationSummaryViewModel:
       type: object

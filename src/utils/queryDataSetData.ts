@@ -119,7 +119,7 @@ export default async function queryDataSetData(
 
   const unquotedFilterCols = filterCols.map((col) => col.slice(1, -1));
   const indicatorsById = keyBy(indicators, (indicator) =>
-    debug ? indicator.name.toString() : indicatorIdHasher.encode(indicator.id)
+    indicator.name.toString()
   );
 
   return {
@@ -150,11 +150,13 @@ export default async function queryDataSetData(
         : undefined,
     results: results.map((result) => {
       return {
-        filterItemIds: unquotedFilterCols.map((col) =>
-          debug
-            ? `${col}:${result[col]}`
-            : filterIdHasher.encode(Number(result[col]))
-        ),
+        filters: unquotedFilterCols.reduce<Dictionary<string>>((acc, col) => {
+          acc[col] = debug
+            ? result[col].toString()
+            : filterIdHasher.encode(Number(result[col]));
+
+          return acc;
+        }, {}),
         timePeriod: {
           code: parseTimePeriodCode(result.time_identifier),
           year: Number(result.time_period),
