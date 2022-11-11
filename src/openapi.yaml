@@ -34,7 +34,7 @@ paths:
             minimum: 1
         - name: pageSize
           in: query
-          description: The maximum number of results allowed per page.
+          description: The maximum number of results per page.
           required: false
           schema:
             type: number
@@ -251,6 +251,15 @@ components:
           description: The IDs or codes (if available) of locations to filter results by.
           items:
             type: string
+        page:
+          type: number
+          description: The page of results to fetch.
+          default: 1
+        pageSize:
+          type: number
+          description: The maximum number of results per page.
+          default: 100
+          maximum: 200
         showMeta:
           type: boolean
           description: Include the data set metadata associated with the results in the response.
@@ -327,6 +336,7 @@ components:
       description: Contains the results of a data set query, and any associated footnotes or meta (where applicable).
       required:
         - footnotes
+        - paging
         - results
         - _links
       properties:
@@ -337,6 +347,8 @@ components:
           description: The footnotes relevant to the data set query results.
           items:
             $ref: '#/components/schemas/FootnoteViewModel'
+        paging:
+          $ref: '#/components/schemas/PagingViewModel'
         results:
           type: array
           description: The results of the data set query.

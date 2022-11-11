@@ -32,7 +32,7 @@ export default async function queryDataSetData(
   const locationIdHasher = createLocationIdHasher();
   const indicatorIdHasher = createIndicatorIdHasher();
 
-  const { timePeriod } = query;
+  const { timePeriod, page = 1, pageSize = 100 } = query;
   const locationIds = parseIds(query.locations, locationIdHasher);
   const filterItemIds = parseIds(query.filterItems, filterIdHasher);
   const indicatorIds = parseIds(query.indicators, indicatorIdHasher);
@@ -48,45 +48,61 @@ export default async function queryDataSetData(
     ]
   );
 
-  const indicatorCols = indicators.reduce<Set<string>>((acc, indicator) => {
-    acc.add(`"${indicator.name}"`);
-    return acc;
-  }, new Set());
-
   const groupedFilterItems = groupBy(
     filterItems,
     (filter) => filter.group_name
   );
 
-  const dbQuery = `
-    SELECT time_period,
-           time_identifier,
-           locations.geographic_level,
-           locations.id AS location_id,
-           ${[
-             ...filterCols.map(
-               (col) =>
-                 `${
-                   debug ? `concat(${col}.id, '::', ${col}.label)` : `${col}.id`
-                 } AS ${col}`
-             ),
-             ...indicatorCols,
-           ]}
-    FROM '${tableFile(dataSetDir, 'data')}' AS data
-        ${getFilterJoins(dataSetDir, filterCols, 'label')}
-        JOIN '${tableFile(dataSetDir, 'locations')}' AS locations
-    ON row (${locationCols.map((col) => `locations.${col}`)})
-        = row (${locationCols.map((col) => `data.${col}`)})
-    WHERE time_identifier = ?
-      AND time_period >= ?
-      AND time_period <= ? ${
-        locationIds.length > 0
-          ? `AND locations.id IN (${placeholders(locationIds)})`
-          : ''
-      } ${getFiltersCondition(dataSetDir, groupedFilterItems)};
-    `;
+  const createQuery = (columns: string[]) => `
+      SELECT ${columns}
+      FROM '${tableFile(dataSetDir, 'data')}' AS data
+          ${getFilterJoins(dataSetDir, filterCols, 'label')}
+          JOIN '${tableFile(dataSetDir, 'locations')}' AS locations
+            ON (${locationCols.map((col) => `locations.${col}`)})
+                = (${locationCols.map((col) => `data.${col}`)})
+      WHERE data.time_identifier = ?
+        AND data.time_period >= ?
+        AND data.time_period <= ? ${
+          locationIds.length > 0
+            ? `AND locations.id IN (${placeholders(locationIds)})`
+            : ''
+        } ${getFiltersCondition(dataSetDir, groupedFilterItems)}
+      `;
 
-  const results = await db.all<Result>(dbQuery, [
+  const totalQuery = createQuery(['count(*) as total']);
+  const resultsQuery = `
+    ${createQuery([
+      'data.time_period',
+      'data.time_identifier',
+      'locations.geographic_level',
+      'locations.id AS location_id',
+      ...filterCols.map(
+        (col) =>
+          `${
+            debug ? `concat(${col}.id, '::', ${col}.label)` : `${col}.id`
+          } AS ${col}`
+      ),
+      ...indicators.map((i) => `data."${i.name}"`),
+    ])}
+    LIMIT ?
+    OFFSET ?
+  `;
+
+  // Tried cursor/keyset pagination, but it's probably too difficult to implement.
+  // Might need to revisit this in the future if performance is an issue.
+  // - Ordering is a real headache as we'd need to perform struct comparisons across
+  //   non-indicator columns. This could potentially be even worse in terms of performance!
+  // - We would most likely need to create new columns for row ids and row structs (of
+  //   non-indicator columns). This would blow up the size of the Parquet file.
+  // - The WHERE clause we would need to generate would be actually horrendous, especially
+  //   if we want to allow users to specify custom sorting.
+  // - The cursor token we'd generate for clients could potentially become big as
+  //   it'd rely on a bunch of columns being combined.
+  // - If we scale this horizontally, offset pagination is probably fine even if it's
+  //   not as fast on paper. Cursor pagination may be a premature optimisation.
+  const pageOffset = (page - 1) * pageSize;
+
+  const params = [
     startCode,
     timePeriod.startYear,
     timePeriod.endYear,
@@ -94,6 +110,11 @@ export default async function queryDataSetData(
     ...Object.values(groupedFilterItems).flatMap((items) =>
       items.map((item) => item.label)
     ),
+  ];
+
+  const [{ total }, results] = await Promise.all([
+    db.first<{ total: number }>(totalQuery, params),
+    db.all<Result>(resultsQuery, [...params, pageSize, pageOffset]),
   ]);
 
   const unquotedFilterCols = filterCols.map((col) => col.slice(1, -1));
@@ -113,6 +134,12 @@ export default async function queryDataSetData(
       meta: {
         href: `/api/v1/data-sets/${dataSetId}/meta`,
       },
+    },
+    paging: {
+      page,
+      pageSize,
+      totalResults: total,
+      totalPages: Math.ceil(total / pageSize),
     },
     footnotes: [],
     warnings:
