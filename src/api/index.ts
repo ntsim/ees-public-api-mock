@@ -3,36 +3,9 @@ import compression from 'compression';
 import express, { ErrorRequestHandler, Request, Response } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
 import path from 'path';
-import {
-  absenceRatesByCharacteristicsDataSetData,
-  absenceRatesDataSetData,
-  permanentExclusionsDataSetData,
-} from '../mocks/dataSetData';
-import {
-  absenceRatesByCharacteristicsDataSetMeta,
-  absenceRatesDataSetMeta,
-  permanentExclusionsDataSetMeta,
-} from '../mocks/dataSetMeta';
-import {
-  absenceRatesByCharacteristicsDataSet,
-  absenceRatesDataSet,
-  allDataSets,
-  benchmarkDataSets,
-  permanentExclusionsDataSet,
-  permanentExclusionsDataSets,
-  pupilAbsenceDataSets,
-  spcDataSets,
-} from '../mocks/dataSets';
-import {
-  permanentExclusionsPublication,
-  publications,
-  pupilAbsencePublication,
-  spcPublication,
-} from '../mocks/publications';
-import { ApiErrorViewModel, DataSetResultsViewModel } from '../schema';
-import dataSetResultsToCsv from '../utils/dataSetResultsToCsv';
-import filterDataSetMeta from '../utils/filterDataSetMeta';
-import filterDataSetResults from '../utils/filterDataSetResults';
+import { allDataSets, spcDataSets } from '../mocks/dataSets';
+import { publications, spcPublication } from '../mocks/publications';
+import { ApiErrorViewModel } from '../schema';
 import { dataSetDirs } from '../utils/getDataSetDir';
 import getDataSetMeta from '../utils/getDataSetMeta';
 import normalizeApiErrors from '../utils/normalizeApiErrors';
@@ -85,12 +58,6 @@ app.get('/api/v1/publications', (req, res) => {
 
 app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
   switch (req.params.publicationId) {
-    case pupilAbsencePublication.id:
-      res.status(200).json(pupilAbsenceDataSets);
-      break;
-    case permanentExclusionsPublication.id:
-      res.status(200).json(permanentExclusionsDataSets);
-      break;
     case spcPublication.id:
       res.status(200).json(spcDataSets);
       break;
@@ -100,63 +67,21 @@ app.get('/api/v1/publications/:publicationId/data-sets', (req, res) => {
 });
 
 app.get('/api/v1/data-sets/:dataSetId/meta', async (req, res) => {
-  const showFilterIds = Boolean(req.query.showFilterIds);
-
-  switch (req.params.dataSetId) {
-    case absenceRatesDataSet.id:
-      res
-        .status(200)
-        .json(filterDataSetMeta(absenceRatesDataSetMeta, { showFilterIds }));
-      break;
-    case absenceRatesByCharacteristicsDataSet.id:
-      res.status(200).json(
-        filterDataSetMeta(absenceRatesByCharacteristicsDataSetMeta, {
-          showFilterIds,
-        })
-      );
-      break;
-    case permanentExclusionsDataSet.id:
-      res.status(200).json(
-        filterDataSetMeta(permanentExclusionsDataSetMeta, {
-          showFilterIds,
-        })
-      );
-      break;
-    default: {
-      if (dataSetDirs[req.params.dataSetId]) {
-        res.status(200).json(await getDataSetMeta(req.params.dataSetId));
-        return;
-      }
-
-      res.status(404).json(notFoundError());
-      return;
-    }
+  if (dataSetDirs[req.params.dataSetId]) {
+    res.status(200).json(await getDataSetMeta(req.params.dataSetId));
+    return;
   }
+
+  res.status(404).json(notFoundError());
+  return;
 });
 
 app.post('/api/v1/data-sets/:dataSetId/query', async (req, res) => {
-  switch (req.params.dataSetId) {
-    case absenceRatesDataSet.id:
-      handleMockDataSetQuery(req, res, absenceRatesDataSetData);
-      break;
-    case absenceRatesByCharacteristicsDataSet.id:
-      handleMockDataSetQuery(
-        req,
-        res,
-        absenceRatesByCharacteristicsDataSetData
-      );
-      break;
-    case permanentExclusionsDataSet.id:
-      handleMockDataSetQuery(req, res, permanentExclusionsDataSetData);
-      break;
-    default: {
-      if (dataSetDirs[req.params.dataSetId]) {
-        return await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
-      }
-
-      res.status(404).json(notFoundError());
-    }
+  if (dataSetDirs[req.params.dataSetId]) {
+    return await handleDatabaseDataSetQuery(req, res, req.params.dataSetId);
   }
+
+  res.status(404).json(notFoundError());
 });
 
 app.get('/api/v1/data-sets/:dataSetId/file', (req, res) => {
@@ -197,28 +122,6 @@ function notFoundError(): ApiErrorViewModel {
   };
 }
 
-function handleMockDataSetQuery(
-  req: Request,
-  res: Response,
-  results: DataSetResultsViewModel
-) {
-  res.status(200);
-
-  const filteredResults = filterDataSetResults(results, req.body);
-
-  if (req.headers.accept?.toLowerCase() !== 'text/csv') {
-    const body: DataSetResultsViewModel = {
-      ...filteredResults,
-      meta: req.body.showMeta ? filteredResults.meta : undefined,
-    };
-
-    return res.json(body);
-  }
-
-  res.setHeader('Content-Type', 'text/csv');
-  res.send(dataSetResultsToCsv(filteredResults));
-}
-
 async function handleDatabaseDataSetQuery(
   req: Request,
   res: Response,
@@ -227,6 +130,8 @@ async function handleDatabaseDataSetQuery(
   const results = await queryDataSetData(dataSetId, req.body, {
     debug: typeof req.query.debug !== 'undefined',
   });
+
+  // TODO - Implement CSV response
 
   res.status(200).send(results);
 }
