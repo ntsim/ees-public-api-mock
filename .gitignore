@@ -1,7 +1,7 @@
 .idea/
 node_modules/
 data-imports/
-build/
+public/
 src/schema/
 .vercel/
 .logs/
