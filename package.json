@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "swc src -d build --copy-files",
+    "build": "npm run schema && swc src -d build --copy-files",
     "import": "ts-node --transpile-only src/scripts/import.ts",
     "start": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/api",
     "schema": "openapi --input src/openapi.yaml --output src/schema --useUnionTypes",
